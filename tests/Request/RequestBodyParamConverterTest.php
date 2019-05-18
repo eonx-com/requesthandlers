@@ -1,0 +1,96 @@
+<?php
+declare(strict_types=1);
+
+namespace Tests\LoyaltyCorp\RequestHandlers\Request;
+
+use FOS\RestBundle\Serializer\SymfonySerializerAdapter;
+use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
+use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
+use RuntimeException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\SerializerInterface;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\RequestDtoStub;
+use Tests\LoyaltyCorp\RequestHandlers\TestCase;
+
+/**
+ * @covers \LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter
+ */
+class RequestBodyParamConverterTest extends TestCase
+{
+    /**
+     * Tests that supports works
+     *
+     * @return void
+     */
+    public function testSupports(): void
+    {
+        $serializer = $this->createMock(SerializerInterface::class);
+
+        $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
+
+        $result = $converter->supports(new ParamConverter([
+            'class' => RequestDtoStub::class
+        ]));
+
+        self::assertTrue($result);
+    }
+
+    /**
+     * Tests that the param converter applies and configures the context
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    public function testApply(): void
+    {
+        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer->expects(self::once())
+            ->method('deserialize')
+            ->with('body', 'EntityClass', null, [
+                PropertyNormalizer::DEFAULT_CONSTRUCTOR_ARGUMENTS => [
+                    'EntityClass' => [
+                        'attribute' => 'value'
+                    ]
+                ],
+                'version' => null,
+                'maxDepth' => null,
+                'enable_max_depth' => null
+            ]);
+
+        $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
+
+        $request = new Request([], [], [], [], [], [], 'body');
+        $request->attributes->set('attribute', 'value');
+
+        $converter->apply($request, new ParamConverter([
+            'class' => 'EntityClass'
+        ]));
+    }
+
+    /**
+     * Tests that the param converter applies and configures the context
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    public function testApplyThrows(): void
+    {
+        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer->expects(self::once())
+            ->method('deserialize')
+            ->willThrowException(new RuntimeException());
+
+        $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
+
+        $request = new Request();
+
+        $this->expectException(RuntimeException::class);
+
+        $converter->apply($request, new ParamConverter([
+            'class' => 'EntityClass'
+        ]));
+    }
+}
