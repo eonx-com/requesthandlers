@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException;
 use LoyaltyCorp\RequestHandlers\Middleware\ValidatingMiddleware;
 use Symfony\Component\Validator\ConstraintViolation;
-use Tests\LoyaltyCorp\RequestHandlers\Stubs\External\Symfony\ValidatorStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\RequestDtoStub;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\Validator\ValidatorStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**

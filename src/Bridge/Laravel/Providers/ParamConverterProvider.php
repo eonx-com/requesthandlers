@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace LoyaltyCorp\RequestHandlers\Providers;
+namespace LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers;
 
 use DateTime;
 use Doctrine\Common\Annotations\Reader;
@@ -43,6 +43,7 @@ class ParamConverterProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->alias(AnnotationReader::class, Reader::class);
         $this->app->singleton(
             ClassMetadataFactoryInterface::class,
             static function (Container $app): ClassMetadataFactory {
@@ -112,7 +113,6 @@ class ParamConverterProvider extends ServiceProvider
                 return $manager;
             }
         );
-        $this->app->alias(AnnotationReader::class, Reader::class);
         $this->app->singleton(ValidatorInterface::class, static function (Container $app): ValidatorInterface {
             $reader = $app->make(AnnotationReader::class);
 

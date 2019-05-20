@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\LoyaltyCorp\RequestHandlers\Stubs\External\Symfony;
+namespace Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\Validator;
 
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
