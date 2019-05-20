@@ -1,3 +1,52 @@
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
+parameters:
+    ignoreErrors:
+        -
+            message: '#Constant XDEBUG_[A-Z_]+ not found.#'
+            path: tests/bootstrap.php
+        -
+            message: '#LoyaltyCorp\\RequestHandlers\\Event\\FilterControllerEvent::__construct\(\) does not call parent constructor from Symfony\\Component\\HttpKernel\\Event\\FilterControllerEvent\.#'
+            path: src/Event/FilterControllerEvent.php
+        -
+            message: '#Call to function is_array\(\) with object|string will always evaluate to false\.#'
+            path: src/Middleware/ParamConverterMiddleware.php
+
+        -
+            message: '#Strict comparison using === between false and false will always evaluate to true\.#'
+            path: src/Middleware/ParamConverterMiddleware.php
+        -
+            message: '#Call to function is_array\(\) with object|string will always evaluate to false\.#'
+            path: src/Middleware/ValidatingMiddleware.php
+
+        -
+            message: '#Strict comparison using === between false and false will always evaluate to true\.#'
+            path: src/Middleware/ValidatingMiddleware.php
+        -
+            message: '#Method LoyaltyCorp\\RequestHandlers\\Middleware\\ParamConverterMiddleware::resolveController\(\) should return callable but returns array<int, mixed>\.#'
+            path: src/Middleware/ParamConverterMiddleware.php
+        -
+            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return object but returns null\.#'
+            path: src/Serializer/DoctrineDenormalizer.php
+        -
+            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return object but returns object\|null\.#'
+            path: src/Serializer/DoctrineDenormalizer.php
+        -
+            message: '#Strict comparison using !== between string and null will always evaluate to true\.#'
+            path: src/Request/RequestBodyParamConverter.php
+        -
+            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\RequestBodySerializer::denormalize\(\) should return object but returns null\.#'
+            path: src/Serializer/RequestBodySerializer.php
+        -
+            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\RequestBodySerializer::denormalize\(\) has parameter \$type with no typehint specified\.#'
+            path: src/Serializer/RequestBodySerializer.php
+        -
+            message: '#Call to static method PHPUnit\\Framework\\Assert::assertNull\(\) with object will always evaluate to false\.#'
+            path: tests/Serializer/DoctrineDenormalizerTest.php
+        -
+            message: '#Call to static method PHPUnit\\Framework\\Assert::assertNull\(\) with object will always evaluate to false\.#'
+            path: tests/Serializer/RequestBodySerializerTest.php
+        -
+            message: '#Call to static method PHPUnit\\Framework\\Assert::assertInstanceOf\(\) with (.*) and Symfony\\Component\\Serializer\\Exception\\NotNormalizableValueException will always evaluate to true\.#'
+            path: tests/Serializer/RequestBodySerializerTest.php

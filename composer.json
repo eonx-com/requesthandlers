@@ -1,7 +1,33 @@
 {
-    "require": {
-        "sensio/framework-extra-bundle": "^5.3"
-    },
+  "name": "loyaltycorp/requesthandlers",
+  "description": "Support library to enable Request DTO and Doctrine ParamConverters in Lumen",
+  "keywords": [
+    "paramconverters",
+    "lumen"
+  ],
+  "license": "BSD-3-Clause",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "LoyaltyCorp\\RequestHandlers\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\LoyaltyCorp\\RequestHandlers\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^7.2",
+    "sensio/framework-extra-bundle": "^5.3",
+    "laravel/lumen-framework": "^5.8",
+    "friendsofsymfony/rest-bundle": "^2.5",
+    "symfony/expression-language": "^4.2",
+    "symfony/validator": "^4.2",
+    "symfony/serializer": "^4.2",
+    "symfony/property-info": "^4.2",
+    "eoneopay/utils": "^0.2.2"
+  },
   "require-dev": {
     "eoneopay/standards": "dev-master",
     "phpstan/phpstan": "^0.11.6",
@@ -11,5 +37,11 @@
     "roave/security-advisories": "dev-master",
     "sebastian/phpcpd": "^4.1",
     "squizlabs/php_codesniffer": "^3.4"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true
   }
 }
