@@ -8,6 +8,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use EoneoPay\Utils\AnnotationReader;
 use LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers\ParamConverterProvider;
 use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
+use LoyaltyCorp\RequestHandlers\Serializer\RequestBodySerializer;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter;
@@ -42,7 +43,8 @@ class ParamConverterProviderTest extends TestCase
             RequestBodyParamConverter::class => RequestBodyParamConverter::class,
             ParamConverterListener::class => ParamConverterListener::class,
             ParamConverterManager::class => ParamConverterManager::class,
-            ValidatorInterface::class => ValidatorInterface::class
+            ValidatorInterface::class => ValidatorInterface::class,
+            'requesthandlers_serializer' => RequestBodySerializer::class
         ];
 
         foreach ($services as $abstract => $concrete) {
