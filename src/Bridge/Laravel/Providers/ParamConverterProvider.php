@@ -31,6 +31,7 @@ use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateIntervalNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -63,37 +64,7 @@ class ParamConverterProvider extends ServiceProvider
         $this->app->singleton(
             RequestBodyParamConverter::class,
             static function (Container $app): RequestBodyParamConverter {
-                $reflectionExtractor = new ReflectionExtractor();
-                $phpDocExtractor = new PhpDocExtractor();
-
-                $normalizers = [
-                    new DoctrineDenormalizer($app->make(ManagerRegistry::class)),
-                    new PropertyNormalizer(
-                        $app->make(ClassMetadataFactoryInterface::class),
-                        new CamelCaseToSnakeCaseNameConverter(),
-                        new PropertyInfoExtractor(
-                            [$reflectionExtractor],
-                            [$reflectionExtractor, $phpDocExtractor],
-                            [$phpDocExtractor],
-                            [$reflectionExtractor],
-                            [$reflectionExtractor]
-                        )
-                    ),
-                    new ArrayDenormalizer(),
-                    new DateTimeNormalizer([
-                        DateTimeNormalizer::FORMAT_KEY => DateTime::RFC3339
-                    ]), // TODO: wrap or reimplement so a better exception is thrown
-                    new DateIntervalNormalizer([
-                        DateIntervalNormalizer::FORMAT_KEY => 'P%mM'
-                    ]) // TODO: wrap or reimplement so a better exception is thrown
-                ];
-
-                $encoders = [
-                    new JsonEncoder(),
-                    new XmlEncoder()
-                ];
-
-                $serializer = new RequestBodySerializer($normalizers, $encoders);
+                $serializer = $app->make('requesthandlers_serializer');
 
                 // Note: we're intentionally not using the Validation component in this
                 // ParamConverter so we can customise the validation to occur at a later time
@@ -122,5 +93,39 @@ class ParamConverterProvider extends ServiceProvider
 
             return $validator;
         });
+
+        $this->app->singleton('requesthandlers_serializer', static function (Container $app): RequestBodySerializer {
+            $reflectionExtractor = new ReflectionExtractor();
+            $phpDocExtractor = new PhpDocExtractor();
+
+            $normalizers = [
+                new DoctrineDenormalizer($app->make(ManagerRegistry::class)),
+                new PropertyNormalizer(
+                    $app->make(ClassMetadataFactoryInterface::class),
+                    new CamelCaseToSnakeCaseNameConverter(),
+                    new PropertyInfoExtractor(
+                        [$reflectionExtractor],
+                        [$reflectionExtractor, $phpDocExtractor],
+                        [$phpDocExtractor],
+                        [$reflectionExtractor],
+                        [$reflectionExtractor]
+                    )
+                ),
+                new ArrayDenormalizer(),
+                new DateTimeNormalizer([
+                    DateTimeNormalizer::FORMAT_KEY => DateTime::RFC3339
+                ]), // TODO: wrap or reimplement so a better exception is thrown
+                new DateIntervalNormalizer([
+                    DateIntervalNormalizer::FORMAT_KEY => 'P%mM'
+                ]) // TODO: wrap or reimplement so a better exception is thrown
+            ];
+
+            $encoders = [
+                new JsonEncoder(),
+                new XmlEncoder()
+            ];
+
+            return new RequestBodySerializer($normalizers, $encoders);
+        })
     }
 }
