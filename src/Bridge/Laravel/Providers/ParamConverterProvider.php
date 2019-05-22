@@ -19,6 +19,8 @@ use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterManager;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
@@ -31,6 +33,8 @@ use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateIntervalNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
+use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -47,7 +51,15 @@ class ParamConverterProvider extends ServiceProvider
         $this->app->singleton(
             ClassMetadataFactoryInterface::class,
             static function (Container $app): ClassMetadataFactory {
-                return new ClassMetadataFactory(new AnnotationLoader($app->make(AnnotationReader::class)));
+                $loader = new AnnotationLoader($app->make(AnnotationReader::class));
+
+                return new ClassMetadataFactory($loader);
+            }
+        );
+        $this->app->singleton(
+            ConstraintValidatorFactoryInterface::class,
+            static function (Container $app): ContainerConstraintValidatorFactory {
+                return new ContainerConstraintValidatorFactory($app);
             }
         );
         $this->app->singleton(ControllerListener::class);
@@ -60,6 +72,9 @@ class ParamConverterProvider extends ServiceProvider
                 );
             }
         );
+        $this->app->singleton(PropertyAccessorInterface::class, static function (): PropertyAccessor {
+            return new PropertyAccessor(true);
+        });
         $this->app->singleton(
             RequestBodyParamConverter::class,
             static function (Container $app): RequestBodyParamConverter {
@@ -85,9 +100,11 @@ class ParamConverterProvider extends ServiceProvider
         );
         $this->app->singleton(ValidatorInterface::class, static function (Container $app): ValidatorInterface {
             $reader = $app->make(AnnotationReader::class);
+            $constraintFactory = $app->make(ConstraintValidatorFactoryInterface::class);
 
             $validator = Validation::createValidatorBuilder()
                 ->enableAnnotationMapping($reader)
+                ->setConstraintValidatorFactory($constraintFactory)
                 ->getValidator();
 
             return $validator;
