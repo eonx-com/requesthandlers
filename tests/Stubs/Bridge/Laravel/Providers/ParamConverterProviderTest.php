@@ -17,6 +17,15 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
+use Symfony\Component\Validator\Constraints\DivisibleByValidator;
+use Symfony\Component\Validator\Constraints\EqualToValidator;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqualValidator;
+use Symfony\Component\Validator\Constraints\GreaterThanValidator;
+use Symfony\Component\Validator\Constraints\IdenticalToValidator;
+use Symfony\Component\Validator\Constraints\LessThanOrEqualValidator;
+use Symfony\Component\Validator\Constraints\LessThanValidator;
+use Symfony\Component\Validator\Constraints\NotEqualToValidator;
+use Symfony\Component\Validator\Constraints\NotIdenticalToValidator;
 use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -50,7 +59,16 @@ class ParamConverterProviderTest extends TestCase
             ParamConverterListener::class => ParamConverterListener::class,
             ParamConverterManager::class => ParamConverterManager::class,
             ValidatorInterface::class => ValidatorInterface::class,
-            'requesthandlers_serializer' => RequestBodySerializer::class
+            'requesthandlers_serializer' => RequestBodySerializer::class,
+            DivisibleByValidator::class => DivisibleByValidator::class,
+            EqualToValidator::class => EqualToValidator::class,
+            GreaterThanOrEqualValidator::class => GreaterThanOrEqualValidator::class,
+            GreaterThanValidator::class => GreaterThanValidator::class,
+            IdenticalToValidator::class => IdenticalToValidator::class,
+            LessThanOrEqualValidator::class => LessThanOrEqualValidator::class,
+            LessThanValidator::class => LessThanValidator::class,
+            NotEqualToValidator::class => NotEqualToValidator::class,
+            NotIdenticalToValidator::class => NotIdenticalToValidator::class
         ];
 
         foreach ($services as $abstract => $concrete) {

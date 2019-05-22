@@ -33,6 +33,15 @@ use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateIntervalNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Validator\Constraints\DivisibleByValidator;
+use Symfony\Component\Validator\Constraints\EqualToValidator;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqualValidator;
+use Symfony\Component\Validator\Constraints\GreaterThanValidator;
+use Symfony\Component\Validator\Constraints\IdenticalToValidator;
+use Symfony\Component\Validator\Constraints\LessThanOrEqualValidator;
+use Symfony\Component\Validator\Constraints\LessThanValidator;
+use Symfony\Component\Validator\Constraints\NotEqualToValidator;
+use Symfony\Component\Validator\Constraints\NotIdenticalToValidator;
 use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
 use Symfony\Component\Validator\Validation;
@@ -47,6 +56,22 @@ class ParamConverterProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $validators = [
+            DivisibleByValidator::class,
+            EqualToValidator::class,
+            GreaterThanOrEqualValidator::class,
+            GreaterThanValidator::class,
+            IdenticalToValidator::class,
+            LessThanOrEqualValidator::class,
+            LessThanValidator::class,
+            NotEqualToValidator::class,
+            NotIdenticalToValidator::class
+        ];
+
+        foreach ($validators as $validator) {
+            $this->app->bind($validator);
+        }
+
         $this->app->alias(AnnotationReader::class, Reader::class);
         $this->app->singleton(
             ClassMetadataFactoryInterface::class,
