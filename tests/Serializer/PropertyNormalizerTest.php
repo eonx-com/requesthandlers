@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Tests\LoyaltyCorp\RequestHandlers\Serializer;
 
+use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\RequestDtoStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Serializer\PropertyNormalizerStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
@@ -38,5 +40,26 @@ class PropertyNormalizerTest extends TestCase
         $context = $normalizer->createChildContext([], 'attributeName');
 
         static::assertSame('attributeName', $context['attribute']);
+    }
+
+    /**
+     * Tests that denormalize adds extra parameters
+     *
+     * @return void
+     *
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalize(): void
+    {
+        $normalizer = new PropertyNormalizer();
+
+        /** @var \Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\RequestDtoStub $result */
+        $result = $normalizer->denormalize([], RequestDtoStub::class, null, [
+            PropertyNormalizer::EXTRA_PARAMETERS => [
+                'property' => 'value'
+            ]
+        ]);
+
+        static::assertSame('value', $result->getProperty());
     }
 }

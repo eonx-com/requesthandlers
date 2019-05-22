@@ -82,9 +82,10 @@ class RequestBodyParamConverter extends BaseRequestBodyParamConverter
     protected function configureContext(Context $context, array $options): void
     {
         if ($this->request !== null && $this->configuration !== null) {
-            $context->setAttribute(PropertyNormalizer::DEFAULT_CONSTRUCTOR_ARGUMENTS, [
-                $this->configuration->getClass() => $this->request->attributes->all()
-            ]);
+            $context->setAttribute(
+                PropertyNormalizer::EXTRA_PARAMETERS,
+                $this->request->attributes->all()
+            );
         }
 
         parent::configureContext($context, $options);
