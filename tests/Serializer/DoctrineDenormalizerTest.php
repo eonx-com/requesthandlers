@@ -53,6 +53,24 @@ class DoctrineDenormalizerTest extends TestCase
     }
 
     /**
+     * Tests denormalize
+     *
+     * @return void
+     *
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizeObject(): void
+    {
+        $entity = new stdClass();
+
+        $registry = $this->createMock(ManagerRegistry::class);
+
+        $denormalizer = new DoctrineDenormalizer($registry);
+        $result = $denormalizer->denormalize($entity, 'stdClass');
+        self::assertSame($entity, $result);
+    }
+
+    /**
      * Tests that supports works correctly.
      *
      * @return void

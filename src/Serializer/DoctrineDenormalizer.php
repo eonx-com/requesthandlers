@@ -32,6 +32,14 @@ class DoctrineDenormalizer implements DenormalizerInterface
      */
     public function denormalize($data, $class, $format = null, ?array $context = null)
     {
+        if ($data instanceof $class === true) {
+            // In some circumstances we're going to end up with $data being an object
+            // already, especially when we're using ->denormalize() specifically instead
+            // of deserialize
+
+            return $data;
+        }
+
         if (($data['id'] ?? null) === null) {
             return null;
         }

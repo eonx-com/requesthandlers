@@ -13,8 +13,12 @@ use Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterManager;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
+use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
+use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Doctrine\Common\Persistence\ManagerRegistryStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Illuminate\Contracts\Foundation\ApplicationStub;
@@ -38,8 +42,10 @@ class ParamConverterProviderTest extends TestCase
         $services = [
             Reader::class => AnnotationReader::class,
             ClassMetadataFactoryInterface::class => ClassMetadataFactory::class,
+            ConstraintValidatorFactoryInterface::class => ContainerConstraintValidatorFactory::class,
             ControllerListener::class => ControllerListener::class,
             DoctrineParamConverter::class => DoctrineParamConverter::class,
+            PropertyAccessorInterface::class => PropertyAccessor::class,
             RequestBodyParamConverter::class => RequestBodyParamConverter::class,
             ParamConverterListener::class => ParamConverterListener::class,
             ParamConverterManager::class => ParamConverterManager::class,
