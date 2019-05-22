@@ -19,24 +19,6 @@ use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 class RequestBodyParamConverterTest extends TestCase
 {
     /**
-     * Tests that supports works
-     *
-     * @return void
-     */
-    public function testSupports(): void
-    {
-        $serializer = $this->createMock(SerializerInterface::class);
-
-        $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
-
-        $result = $converter->supports(new ParamConverter([
-            'class' => RequestDtoStub::class
-        ]));
-
-        self::assertTrue($result);
-    }
-
-    /**
      * Tests that the param converter applies and configures the context
      *
      * @return void
@@ -49,10 +31,8 @@ class RequestBodyParamConverterTest extends TestCase
         $serializer->expects(self::once())
             ->method('deserialize')
             ->with('body', 'EntityClass', null, [
-                PropertyNormalizer::DEFAULT_CONSTRUCTOR_ARGUMENTS => [
-                    'EntityClass' => [
-                        'attribute' => 'value'
-                    ]
+                PropertyNormalizer::EXTRA_PARAMETERS => [
+                    'attribute' => 'value'
                 ],
                 'version' => null,
                 'maxDepth' => null,
@@ -92,5 +72,23 @@ class RequestBodyParamConverterTest extends TestCase
         $converter->apply($request, new ParamConverter([
             'class' => 'EntityClass'
         ]));
+    }
+
+    /**
+     * Tests that supports works
+     *
+     * @return void
+     */
+    public function testSupports(): void
+    {
+        $serializer = $this->createMock(SerializerInterface::class);
+
+        $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
+
+        $result = $converter->supports(new ParamConverter([
+            'class' => RequestDtoStub::class
+        ]));
+
+        self::assertTrue($result);
     }
 }

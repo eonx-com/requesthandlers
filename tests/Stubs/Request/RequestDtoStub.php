@@ -12,6 +12,13 @@ use Tests\LoyaltyCorp\RequestHandlers\Stubs\Exceptions\RequestValidationExceptio
 class RequestDtoStub implements RequestDtoInterface
 {
     /**
+     * Test property
+     *
+     * @var string
+     */
+    private $property;
+
+    /**
      * {@inheritdoc}
      */
     public static function getExceptionClass(): string
@@ -25,5 +32,15 @@ class RequestDtoStub implements RequestDtoInterface
     public function resolveValidationGroups(): array
     {
         return [];
+    }
+
+    /**
+     * Returns test property
+     *
+     * @return string
+     */
+    public function getProperty(): string
+    {
+        return $this->property;
     }
 }
