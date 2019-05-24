@@ -66,7 +66,7 @@ class RequestBodyParamConverter extends BaseRequestBodyParamConverter
     {
         return $configuration->getClass() !== null &&
             \in_array(
-                RequestDtoInterface::class,
+                RequestObjectInterface::class,
                 \class_implements($configuration->getClass()),
                 true
             );
