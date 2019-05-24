@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Tests\LoyaltyCorp\RequestHandlers\Stubs\Request;
 
-use LoyaltyCorp\RequestHandlers\Request\RequestDtoInterface;
+use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Exceptions\RequestValidationExceptionStub;
 
 /**
  * @coversNothing
  */
-class RequestDtoStub implements RequestDtoInterface
+class RequestObjectStub implements RequestObjectInterface
 {
     /**
      * Test property

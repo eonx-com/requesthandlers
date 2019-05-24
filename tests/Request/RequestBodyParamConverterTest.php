@@ -10,7 +10,7 @@ use RuntimeException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
-use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\RequestDtoStub;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\RequestObjectStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**
@@ -86,7 +86,7 @@ class RequestBodyParamConverterTest extends TestCase
         $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
 
         $result = $converter->supports(new ParamConverter([
-            'class' => RequestDtoStub::class
+            'class' => RequestObjectStub::class
         ]));
 
         self::assertTrue($result);

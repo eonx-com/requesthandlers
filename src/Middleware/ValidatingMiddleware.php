@@ -5,7 +5,7 @@ namespace LoyaltyCorp\RequestHandlers\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use LoyaltyCorp\RequestHandlers\Request\RequestDtoInterface;
+use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ValidatingMiddleware
@@ -43,12 +43,12 @@ class ValidatingMiddleware
 
         /** @noinspection ForeachSourceInspection Laravel's $route parameter is an array of properties */
         foreach ($route[2] as $parameter) {
-            if (($parameter instanceof RequestDtoInterface) === false) {
+            if (($parameter instanceof RequestObjectInterface) === false) {
                 continue;
             }
 
             /**
-             * @var \LoyaltyCorp\RequestHandlers\Request\RequestDtoInterface $parameter
+             * @var \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface $parameter
              */
 
             $groups = $parameter->resolveValidationGroups();
