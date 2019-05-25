@@ -3,16 +3,16 @@ declare(strict_types=1);
 
 namespace LoyaltyCorp\RequestHandlers\Exceptions;
 
-use EoneoPay\Utils\Exceptions\RuntimeException;
+use EoneoPay\Utils\Exceptions\BaseException;
 
-class KernelNotAvailableException extends RuntimeException
+class DoctrineParamConverterMisconfiguredException extends BaseException
 {
     /**
      * {@inheritdoc}
      */
     public function getErrorCode(): int
     {
-        return 20;
+        return 10;
     }
 
     /**
@@ -21,5 +21,13 @@ class KernelNotAvailableException extends RuntimeException
     public function getErrorSubCode(): int
     {
         return 1;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStatusCode(): int
+    {
+        return static::DEFAULT_STATUS_CODE_RUNTIME;
     }
 }
