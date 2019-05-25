@@ -7,11 +7,12 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use EoneoPay\Utils\AnnotationReader;
 use LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers\ParamConverterProvider;
+use LoyaltyCorp\RequestHandlers\Request\DoctrineParamConverter;
 use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
 use LoyaltyCorp\RequestHandlers\Serializer\RequestBodySerializer;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter as RealDoctrineParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterManager;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -49,17 +50,11 @@ class ParamConverterProviderTest extends TestCase
         (new ParamConverterProvider($application))->register();
 
         $services = [
+            'requesthandlers_serializer' => RequestBodySerializer::class,
             Reader::class => AnnotationReader::class,
             ClassMetadataFactoryInterface::class => ClassMetadataFactory::class,
             ConstraintValidatorFactoryInterface::class => ContainerConstraintValidatorFactory::class,
             ControllerListener::class => ControllerListener::class,
-            DoctrineParamConverter::class => DoctrineParamConverter::class,
-            PropertyAccessorInterface::class => PropertyAccessor::class,
-            RequestBodyParamConverter::class => RequestBodyParamConverter::class,
-            ParamConverterListener::class => ParamConverterListener::class,
-            ParamConverterManager::class => ParamConverterManager::class,
-            ValidatorInterface::class => ValidatorInterface::class,
-            'requesthandlers_serializer' => RequestBodySerializer::class,
             DivisibleByValidator::class => DivisibleByValidator::class,
             EqualToValidator::class => EqualToValidator::class,
             GreaterThanOrEqualValidator::class => GreaterThanOrEqualValidator::class,
@@ -68,7 +63,14 @@ class ParamConverterProviderTest extends TestCase
             LessThanOrEqualValidator::class => LessThanOrEqualValidator::class,
             LessThanValidator::class => LessThanValidator::class,
             NotEqualToValidator::class => NotEqualToValidator::class,
-            NotIdenticalToValidator::class => NotIdenticalToValidator::class
+            NotIdenticalToValidator::class => NotIdenticalToValidator::class,
+            PropertyAccessorInterface::class => PropertyAccessor::class,
+            RequestBodyParamConverter::class => RequestBodyParamConverter::class,
+            ParamConverterListener::class => ParamConverterListener::class,
+            ParamConverterManager::class => ParamConverterManager::class,
+            RealDoctrineParamConverter::class => DoctrineParamConverter::class,
+            ValidatorInterface::class => ValidatorInterface::class
+
         ];
 
         foreach ($services as $abstract => $concrete) {
