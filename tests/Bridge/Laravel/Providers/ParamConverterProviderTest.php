@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\LoyaltyCorp\RequestHandlers\Stubs\Bridge\Laravel\Providers;
+namespace Tests\LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
