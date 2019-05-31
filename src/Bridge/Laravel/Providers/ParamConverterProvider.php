@@ -136,31 +136,11 @@ class ParamConverterProvider extends ServiceProvider
             return $validator;
         });
 
-        $this->app->singleton('requesthandlers_serializer', static function (Container $app): RequestBodySerializer {
-            $reflectionExtractor = new ReflectionExtractor();
-            $phpDocExtractor = new PhpDocExtractor();
+        $this->buildNormalizers();
 
-            $normalizers = [
-                new DoctrineDenormalizer($app->make(ManagerRegistry::class)),
-                new PropertyNormalizer(
-                    $app->make(ClassMetadataFactoryInterface::class),
-                    new CamelCaseToSnakeCaseNameConverter(),
-                    new PropertyInfoExtractor(
-                        [$reflectionExtractor],
-                        [$reflectionExtractor, $phpDocExtractor],
-                        [$phpDocExtractor],
-                        [$reflectionExtractor],
-                        [$reflectionExtractor]
-                    )
-                ),
-                new ArrayDenormalizer(),
-                new DateTimeNormalizer([
-                    DateTimeNormalizer::FORMAT_KEY => DateTime::RFC3339
-                ]), // TODO: wrap or reimplement so a better exception is thrown
-                new DateIntervalNormalizer([
-                    DateIntervalNormalizer::FORMAT_KEY => 'P%mM'
-                ]) // TODO: wrap or reimplement so a better exception is thrown
-            ];
+        $this->app->singleton('requesthandlers_serializer', static function (Container $app): RequestBodySerializer {
+            $tagged = $app->tagged('requesthandlers_serializer_normalizer');
+            $normalizers = \is_array($tagged) ? $tagged : \iterator_to_array($tagged);
 
             $encoders = [
                 new JsonEncoder(),
@@ -169,5 +149,50 @@ class ParamConverterProvider extends ServiceProvider
 
             return new RequestBodySerializer($normalizers, $encoders);
         });
+    }
+
+    /**
+     * Builds the normalizers used by the serializer.
+     *
+     * @return void
+     */
+    private function buildNormalizers(): void
+    {
+        $this->app->singleton(ArrayDenormalizer::class);
+        $this->app->singleton(DateIntervalNormalizer::class, static function (Container $app): DateIntervalNormalizer {
+            return new DateIntervalNormalizer([
+                DateIntervalNormalizer::FORMAT_KEY => 'P%mM'
+            ]);
+        });
+        $this->app->singleton(DateTimeNormalizer::class, static function (Container $app): DateTimeNormalizer {
+            return new DateTimeNormalizer([
+                DateTimeNormalizer::FORMAT_KEY => DateTime::RFC3339
+            ]);
+        });
+        $this->app->singleton(DoctrineDenormalizer::class);
+        $this->app->singleton(PropertyNormalizer::class, static function (Container $app): PropertyNormalizer {
+            $reflectionExtractor = new ReflectionExtractor();
+            $phpDocExtractor = new PhpDocExtractor();
+
+            return new PropertyNormalizer(
+                $app->make(ClassMetadataFactoryInterface::class),
+                new CamelCaseToSnakeCaseNameConverter(),
+                new PropertyInfoExtractor(
+                    [$reflectionExtractor],
+                    [$reflectionExtractor, $phpDocExtractor],
+                    [$phpDocExtractor],
+                    [$reflectionExtractor],
+                    [$reflectionExtractor]
+                )
+            );
+        });
+
+        $this->app->tag([
+            ArrayDenormalizer::class,
+            DateIntervalNormalizer::class,
+            DateTimeNormalizer::class,
+            DoctrineDenormalizer::class,
+            PropertyNormalizer::class
+        ], ['requesthandlers_serializer_normalizer']);
     }
 }

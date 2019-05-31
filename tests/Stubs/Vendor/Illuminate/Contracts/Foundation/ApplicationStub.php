@@ -24,6 +24,13 @@ class ApplicationStub implements Application, ArrayAccess
     private $container;
 
     /**
+     * Tagged services.
+     *
+     * @var mixed[]
+     */
+    private $tags;
+
+    /**
      * Create container
      */
     public function __construct()
@@ -464,6 +471,7 @@ class ApplicationStub implements Application, ArrayAccess
      */
     public function tag($abstracts, $tags): void
     {
+        $this->container->tag($abstracts, $tags);
     }
 
     /**
@@ -471,6 +479,7 @@ class ApplicationStub implements Application, ArrayAccess
      */
     public function tagged($tag)
     {
+        return $this->container->tagged($tag);
     }
 
     /**
