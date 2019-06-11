@@ -71,6 +71,51 @@ class DoctrineDenormalizerTest extends TestCase
     }
 
     /**
+     * Tests denormalize with provided class-key mapping.
+     *
+     * @return void
+     *
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizeWithGivenMapping(): void
+    {
+        $entity = new stdClass();
+
+        $repository = $this->createMock(ObjectRepository::class);
+        $repository->expects(self::exactly(2))
+            ->method('findOneBy')
+            ->willReturnMap([
+                [['code' => 'ABCDEFG'], $entity],
+                [['code' => 'invalid'], null]
+            ]);
+
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry->expects(self::exactly(2))
+            ->method('getRepository')
+            ->with('EntityClass')
+            ->willReturn($repository);
+
+        $denormalizer = new DoctrineDenormalizer($registry, [
+            'EntityClass' => 'code'
+        ]);
+
+        $result = $denormalizer->denormalize(['code' => 'ABCDEFG'], 'EntityClass');
+        self::assertSame($entity, $result);
+
+        $result = $denormalizer->denormalize(['code' => 'invalid'], 'EntityClass');
+        self::assertNull($result);
+
+        $result = $denormalizer->denormalize(['code' => null], 'EntityClass');
+        self::assertNull($result);
+
+        $result = $denormalizer->denormalize(['code' => null], 'UnknownEntityClass');
+        self::assertNull($result);
+
+        $result = $denormalizer->denormalize(['unmapped' => null], 'EntityClass');
+        self::assertNull($result);
+    }
+
+    /**
      * Tests that supports works correctly.
      *
      * @return void

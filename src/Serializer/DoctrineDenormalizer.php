@@ -12,7 +12,12 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
  */
 class DoctrineDenormalizer implements DenormalizerInterface
 {
-    private $findKeyMap;
+    /**
+     * Class-key mapping for finding entity.
+     *
+     * @var mixed[]|null
+     */
+    private $classKeyMap;
 
     /**
      * @var \Doctrine\Common\Persistence\ManagerRegistry
@@ -20,14 +25,15 @@ class DoctrineDenormalizer implements DenormalizerInterface
     private $managerRegistry;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Doctrine\Common\Persistence\ManagerRegistry $managerRegistry
+     * @param mixed[]|null $classKeyMap
      */
-    public function __construct(ManagerRegistry $managerRegistry, ?array $findKeyMap = null)
+    public function __construct(ManagerRegistry $managerRegistry, ?array $classKeyMap = null)
     {
         $this->managerRegistry = $managerRegistry;
-        $this->findKeyMap = $findKeyMap;
+        $this->classKeyMap = $classKeyMap;
     }
 
     /**
@@ -43,20 +49,20 @@ class DoctrineDenormalizer implements DenormalizerInterface
             return $data;
         }
 
-        // find key from provided mapping
-        $findKey = $this->getFindByKey($class);
+        // Find lookup key for given class
+        $findKey = $this->getClassLookupKey($class);
 
-        if ($findKey !== null) {
-            return $this->managerRegistry->getRepository($class)
-                ->findOneBy([$findKey => $data[$findKey]]);
+        // If a lookup key exists, then find by lookup key
+        if ($findKey !== null && isset($data[$findKey]) === true) {
+            return $this->findOneBy($class, [$findKey => $data[$findKey]]);
         }
 
         if (($data['id'] ?? null) === null) {
             return null;
         }
 
-        return $this->managerRegistry->getRepository($class)
-            ->findOneBy(['externalId' => $data['id']]);
+        // Default, lookup by externalId/id
+        return $this->findOneBy($class, ['externalId' => $data['id']]);
     }
 
     /**
@@ -73,22 +79,36 @@ class DoctrineDenormalizer implements DenormalizerInterface
     }
 
     /**
-     * Get find by key from provided mappings.
+     * Find an entity by given criteria.
      *
-     * @param $class
+     * @param string $class Class name
+     * @param mixed[] $criteria Criteria to find an entity
      *
-     * @return bool|null
+     * @return object|null
      */
-    public function getFindByKey($class): ?string
+    private function findOneBy(string $class, array $criteria): ?object
     {
-        if ($this->findKeyMap === null) {
+        return $this->managerRegistry->getRepository($class)
+            ->findOneBy($criteria);
+    }
+
+    /**
+     * Get lookup key for given class.
+     *
+     * @param string $class Class name
+     *
+     * @return string|null
+     */
+    private function getClassLookupKey(string $class): ?string
+    {
+        if ($this->classKeyMap === null) {
             return null;
         }
 
-        if (\array_key_exists($class, $this->findKeyMap) !== true) {
+        if (\array_key_exists($class, $this->classKeyMap) !== true) {
             return null;
         }
 
-        return $this->findKeyMap[$class];
+        return $this->classKeyMap[$class];
     }
 }
