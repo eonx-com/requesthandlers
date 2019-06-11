@@ -97,9 +97,9 @@ class DoctrineDenormalizer implements DenormalizerInterface
      *
      * @param string $class Class name
      *
-     * @return string|null
+     * @return mixed|null
      */
-    private function getClassLookupKey(string $class): ?string
+    private function getClassLookupKey(string $class)
     {
         if ($this->classKeyMap === null) {
             return null;
