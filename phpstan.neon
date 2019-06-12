@@ -24,9 +24,6 @@ parameters:
             message: '#Strict comparison using === between false and false will always evaluate to true\.#'
             path: src/Middleware/ValidatingMiddleware.php
         -
-            message: '#Method LoyaltyCorp\\RequestHandlers\\Middleware\\ParamConverterMiddleware::resolveController\(\) should return callable but returns array<int, mixed>\.#'
-            path: src/Middleware/ParamConverterMiddleware.php
-        -
             message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return object but returns null\.#'
             path: src/Serializer/DoctrineDenormalizer.php
         -
