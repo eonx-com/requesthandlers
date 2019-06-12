@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace LoyaltyCorp\RequestHandlers\Serializer;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
+use LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 /**
@@ -38,6 +39,8 @@ class DoctrineDenormalizer implements DenormalizerInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
      */
     public function denormalize($data, $class, $format = null, ?array $context = null)
     {
@@ -49,20 +52,25 @@ class DoctrineDenormalizer implements DenormalizerInterface
             return $data;
         }
 
-        // Find lookup key for given class
-        $findKey = $this->getClassLookupKey($class);
+        // entity criteria
+        $criteria = [];
 
-        // If a lookup key exists, then find by lookup key
-        if ($findKey !== null && isset($data[$findKey]) === true) {
-            return $this->findOneBy($class, [$findKey => $data[$findKey]]);
+        // Find lookup key for given class
+        $findKeys = $this->getClassLookupKey($class);
+
+        foreach ($findKeys as $entityKey => $requestKey) {
+            if (\array_key_exists($requestKey, $data) === true &&
+                $data[$requestKey] !== null) {
+                $criteria[$entityKey] = $data[$requestKey];
+            }
         }
 
-        if (($data['id'] ?? null) === null) {
+        // if criteria is empty i.e. no request key found for this class then return null
+        if (\count($criteria) === 0) {
             return null;
         }
 
-        // Default, lookup by externalId/id
-        return $this->findOneBy($class, ['externalId' => $data['id']]);
+        return $this->findOneBy($class, $criteria);
     }
 
     /**
@@ -97,18 +105,27 @@ class DoctrineDenormalizer implements DenormalizerInterface
      *
      * @param string $class Class name
      *
-     * @return mixed|null
+     * @return mixed[]
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
      */
-    private function getClassLookupKey(string $class)
+    private function getClassLookupKey(string $class): array
     {
-        if ($this->classKeyMap === null) {
-            return null;
+        $default = ['externalId' => 'id'];
+
+        if ($this->classKeyMap === null ||
+            \array_key_exists($class, $this->classKeyMap) !== true) {
+            // return array [entity key => request key]
+            return $default;
         }
 
-        if (\array_key_exists($class, $this->classKeyMap) !== true) {
-            return null;
+        $keyMap = $this->classKeyMap[$class];
+
+        // if the key map is not an array, return default
+        if (\is_array($keyMap) !== true) {
+            throw new DoctrineDenormalizerMappingException('Mis-configured class-key mappings in denormalizer.');
         }
 
-        return $this->classKeyMap[$class];
+        return $keyMap;
     }
 }

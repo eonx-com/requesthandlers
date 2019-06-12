@@ -7,6 +7,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectRepository;
+use LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException;
 use LoyaltyCorp\RequestHandlers\Serializer\DoctrineDenormalizer;
 use stdClass;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
@@ -21,6 +22,7 @@ class DoctrineDenormalizerTest extends TestCase
      *
      * @return void
      *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
     public function testDenormalize(): void
@@ -57,6 +59,7 @@ class DoctrineDenormalizerTest extends TestCase
      *
      * @return void
      *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
     public function testDenormalizeObject(): void
@@ -75,6 +78,7 @@ class DoctrineDenormalizerTest extends TestCase
      *
      * @return void
      *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
     public function testDenormalizeWithGivenMapping(): void
@@ -96,7 +100,7 @@ class DoctrineDenormalizerTest extends TestCase
             ->willReturn($repository);
 
         $denormalizer = new DoctrineDenormalizer($registry, [
-            'EntityClass' => 'code'
+            'EntityClass' => ['code' => 'code', 'skip' => 'skip']
         ]);
 
         $result = $denormalizer->denormalize(['code' => 'ABCDEFG'], 'EntityClass');
@@ -113,6 +117,28 @@ class DoctrineDenormalizerTest extends TestCase
 
         $result = $denormalizer->denormalize(['unmapped' => null], 'EntityClass');
         self::assertNull($result);
+    }
+
+    /**
+     * Test that incorrect DoctrineDenormalizer class-key mapping will throw DoctrineDenormalizerMappingException.
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizeWithGivenMappingThrowsDoctrineDenormalizerMappingException(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+
+        $this->expectException(DoctrineDenormalizerMappingException::class);
+        $this->expectExceptionMessage('Mis-configured class-key mappings in denormalizer');
+
+        $denormalizer = new DoctrineDenormalizer($registry, [
+            'EntityClass' => 'code'
+        ]);
+
+        $denormalizer->denormalize(['code' => 'ABCDEFG'], 'EntityClass');
     }
 
     /**
