@@ -10,8 +10,64 @@ use Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
+/**
+ * @covers \LoyaltyCorp\RequestHandlers\Middleware\ParamConverterMiddleware
+ */
 class ParamConverterMiddlewareTest extends TestCase
 {
+    /**
+     * Tests handle
+     *
+     * @return void
+     *
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    public function testHandle(): void
+    {
+        $container = new Container();
+        $container->instance('Class', new class
+        {
+            /**
+             * Method for test
+             *
+             * @return void
+             */
+            public function method(): void
+            {
+            }
+        });
+        $controllerListener = $this->createMock(ControllerListener::class);
+        $paramListener = $this->createMock(ParamConverterListener::class);
+
+        $middleware = new ParamConverterMiddleware(
+            $container,
+            $controllerListener,
+            $paramListener
+        );
+
+        $request = new Request();
+        $request->setRouteResolver(static function () {
+            return [
+                null,
+                ['uses' => 'Class@method'],
+                [
+                    'attribute' => 'value'
+                ]
+            ];
+        });
+        $next = static function () {
+            return 'hello';
+        };
+
+        $middleware->handle($request, $next);
+
+        /** @var mixed[] $route */
+        $route = $request->route();
+
+        self::assertSame('value', $request->attributes->get('attribute'));
+        self::assertSame('value', $route[2]['attribute']);
+    }
+
     /**
      * Tests handle with bad route
      *
@@ -42,25 +98,20 @@ class ParamConverterMiddlewareTest extends TestCase
     }
 
     /**
-     * Tests handle
+     * Test handle works gracefully when the route calls non existent action
      *
      * @return void
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public function testHandle(): void
+    public function testHandleWhenRouteActionDoesNotExist(): void
     {
         $container = new Container();
-        $container->instance('Class', new class {
-            /**
-             * Method for test
-             *
-             * @return void
-             */
-            public function method(): void
-            {
-            }
+        $container->instance('Class', new class
+        {
+            // empty class with no actions
         });
+
         $controllerListener = $this->createMock(ControllerListener::class);
         $paramListener = $this->createMock(ParamConverterListener::class);
 
@@ -72,20 +123,18 @@ class ParamConverterMiddlewareTest extends TestCase
 
         $request = new Request();
         $request->setRouteResolver(static function () {
-            return [null, ['uses' => 'Class@method'], [
-                'attribute' => 'value'
-            ]];
+            return [
+                null,
+                ['uses' => 'Class@method']
+            ];
         });
         $next = static function () {
             return 'hello';
         };
 
-        $middleware->handle($request, $next);
+        $result = $middleware->handle($request, $next);
 
-        /** @var mixed[] $route */
-        $route = $request->route();
-
-        self::assertSame('value', $request->attributes->get('attribute'));
-        self::assertSame('value', $route[2]['attribute']);
+        // assert the control is passed to next middleware
+        self::assertSame('hello', $result);
     }
 }
