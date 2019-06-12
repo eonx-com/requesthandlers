@@ -125,8 +125,7 @@ class ParamConverterMiddlewareTest extends TestCase
         $request->setRouteResolver(static function () {
             return [
                 null,
-                ['uses' => 'Class@method'], // method does not exist in Class
-                ['attribute' => 'value']
+                ['uses' => 'Class@method']
             ];
         });
         $next = static function () {
@@ -135,6 +134,7 @@ class ParamConverterMiddlewareTest extends TestCase
 
         $result = $middleware->handle($request, $next);
 
+        // assert the control is passed to next middleware
         self::assertSame('hello', $result);
     }
 }

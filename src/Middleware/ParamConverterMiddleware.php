@@ -61,14 +61,14 @@ class ParamConverterMiddleware
             return $next($request);
         }
 
-        // Add laravel route attributes to the symfony request attribute bag so the
-        // symfony dependencies will work as expected.
-        $request->attributes->add($route[2]);
-
         // Resolve the controller callable based on the request.
         $controller = $this->resolveController($route);
 
         if ($controller !== null) {
+            // Add laravel route attributes to the symfony request attribute bag so the
+            // symfony dependencies will work as expected.
+            $request->attributes->add($route[2]);
+
             // Create a faux FilterControllerEvent for use in the symfony dependencies below.
             $filterController = new FilterControllerEvent($controller, $request);
 
@@ -83,11 +83,11 @@ class ParamConverterMiddleware
                 /** @noinspection UnsupportedStringOffsetOperationsInspection */
                 $route[2][$key] = $attribute;
             }
-        }
 
-        $request->setRouteResolver(static function () use ($route) {
-            return $route;
-        });
+            $request->setRouteResolver(static function () use ($route) {
+                return $route;
+            });
+        }
 
         return $next($request);
     }
