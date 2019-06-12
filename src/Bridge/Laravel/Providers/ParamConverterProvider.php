@@ -179,7 +179,7 @@ class ParamConverterProvider extends ServiceProvider
                 new CamelCaseToSnakeCaseNameConverter(),
                 new PropertyInfoExtractor(
                     [$reflectionExtractor],
-                    [$reflectionExtractor, $phpDocExtractor],
+                    [$phpDocExtractor],
                     [$phpDocExtractor],
                     [$reflectionExtractor],
                     [$reflectionExtractor]
