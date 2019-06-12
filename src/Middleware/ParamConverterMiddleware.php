@@ -68,19 +68,21 @@ class ParamConverterMiddleware
         // Resolve the controller callable based on the request.
         $controller = $this->resolveController($route);
 
-        // Create a faux FilterControllerEvent for use in the symfony dependencies below.
-        $filterController = new FilterControllerEvent($controller, $request);
+        if ($controller !== null) {
+            // Create a faux FilterControllerEvent for use in the symfony dependencies below.
+            $filterController = new FilterControllerEvent($controller, $request);
 
-        // Process the controller method for any annotations that are relevant to us
-        $this->controllerListener->onKernelController($filterController);
+            // Process the controller method for any annotations that are relevant to us
+            $this->controllerListener->onKernelController($filterController);
 
-        // Process controller parameters with the ParamConverter instances
-        $this->listener->onKernelController($filterController);
+            // Process controller parameters with the ParamConverter instances
+            $this->listener->onKernelController($filterController);
 
-        // Put the Symfony request attributes back into the laravel route.
-        foreach ($request->attributes as $key => $attribute) {
-            /** @noinspection UnsupportedStringOffsetOperationsInspection */
-            $route[2][$key] = $attribute;
+            // Put the Symfony request attributes back into the laravel route.
+            foreach ($request->attributes as $key => $attribute) {
+                /** @noinspection UnsupportedStringOffsetOperationsInspection */
+                $route[2][$key] = $attribute;
+            }
         }
 
         $request->setRouteResolver(static function () use ($route) {
@@ -95,15 +97,21 @@ class ParamConverterMiddleware
      *
      * @param mixed[] $route
      *
-     * @return callable
+     * @return callable|null
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    private function resolveController(array $route): callable
+    private function resolveController(array $route): ?callable
     {
         $uses = $route[1]['uses'] ?? null;
         $split = \explode('@', $uses);
 
-        return [$this->container->make($split[0]), $split[1]];
+        $callableAction = [$this->container->make($split[0]), $split[1]];
+
+        if (\is_callable($callableAction) === false) {
+            return null;
+        }
+
+        return $callableAction;
     }
 }
