@@ -126,6 +126,6 @@ class DoctrineDenormalizer implements DenormalizerInterface
             throw new DoctrineDenormalizerMappingException('Mis-configured class-key mappings in denormalizer.');
         }
 
-        return $keyMap;
+        return \array_merge($default, $keyMap);
     }
 }
