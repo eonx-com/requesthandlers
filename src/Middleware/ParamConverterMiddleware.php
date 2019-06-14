@@ -32,16 +32,16 @@ class ParamConverterMiddleware
      *
      * @param \Illuminate\Contracts\Container\Container $container
      * @param \Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener $controllerListener
-     * @param \Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener $paramConverterListener
+     * @param \Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener $converterListener
      */
     public function __construct(
         Container $container,
         ControllerListener $controllerListener,
-        ParamConverterListener $paramConverterListener
+        ParamConverterListener $converterListener
     ) {
         $this->container = $container;
         $this->controllerListener = $controllerListener;
-        $this->listener = $paramConverterListener;
+        $this->listener = $converterListener;
     }
 
     /**

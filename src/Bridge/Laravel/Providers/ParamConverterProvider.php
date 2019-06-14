@@ -48,6 +48,9 @@ use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects) Coupling required to bind services
+ */
 class ParamConverterProvider extends ServiceProvider
 {
     /**
