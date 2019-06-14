@@ -34,6 +34,9 @@ use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Doctrine\Common\Persistence\M
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Illuminate\Contracts\Foundation\ApplicationStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects) Coupling required to fully test service provider
+ */
 class ParamConverterProviderTest extends TestCase
 {
     /**
