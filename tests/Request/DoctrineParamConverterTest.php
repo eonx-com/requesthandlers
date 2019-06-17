@@ -135,16 +135,13 @@ class DoctrineParamConverterTest extends TestCase
          */
         $mock = $this->createMock(RealDoctrineParamConverter::class);
 
-        if ($toThrow === null) {
-            $mock->method('apply')
-                ->willReturn(true);
-        } else { // phpcs:ignore
-            $mock->method('apply')
-                ->willThrowException($toThrow);
+        $mock->method('apply')->willReturn(true);
+
+        if (($toThrow instanceof Exception) === true) {
+            $mock->method('apply')->willThrowException($toThrow);
         }
 
-        $mock->method('supports')
-            ->willReturn(true);
+        $mock->method('supports')->willReturn(true);
 
         /**
          * @var \Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter $mock

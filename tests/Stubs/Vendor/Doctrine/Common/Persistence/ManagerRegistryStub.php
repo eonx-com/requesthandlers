@@ -79,6 +79,8 @@ class ManagerRegistryStub implements ManagerRegistry
 
     /**
      * {@inheritdoc}
+     *
+     * @SuppressWarnings(PHPMD.LongVariable) Parameter is inherited from interface
      */
     public function getRepository($persistentObject, $persistentManagerName = null)
     {

@@ -24,13 +24,6 @@ class ApplicationStub implements Application, ArrayAccess
     private $container;
 
     /**
-     * Tagged services.
-     *
-     * @var mixed[]
-     */
-    private $tags;
-
-    /**
      * Create container
      */
     public function __construct()
