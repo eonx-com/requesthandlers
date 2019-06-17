@@ -64,30 +64,33 @@ class ParamConverterMiddleware
         // Resolve the controller callable based on the request.
         $controller = $this->resolveController($route);
 
-        if ($controller !== null) {
-            // Add laravel route attributes to the symfony request attribute bag so the
-            // symfony dependencies will work as expected.
-            $request->attributes->add($route[2]);
-
-            // Create a faux FilterControllerEvent for use in the symfony dependencies below.
-            $filterController = new FilterControllerEvent($controller, $request);
-
-            // Process the controller method for any annotations that are relevant to us
-            $this->controllerListener->onKernelController($filterController);
-
-            // Process controller parameters with the ParamConverter instances
-            $this->listener->onKernelController($filterController);
-
-            // Put the Symfony request attributes back into the laravel route.
-            foreach ($request->attributes as $key => $attribute) {
-                /** @noinspection UnsupportedStringOffsetOperationsInspection */
-                $route[2][$key] = $attribute;
-            }
-
-            $request->setRouteResolver(static function () use ($route) {
-                return $route;
-            });
+        if ($controller === null) {
+            // Controller is not callable, continue with other middleware
+            return $next($request);
         }
+
+        // Add laravel route attributes to the symfony request attribute bag so the
+        // symfony dependencies will work as expected.
+        $request->attributes->add($route[2]);
+
+        // Create a faux FilterControllerEvent for use in the symfony dependencies below.
+        $filterController = new FilterControllerEvent($controller, $request);
+
+        // Process the controller method for any annotations that are relevant to us
+        $this->controllerListener->onKernelController($filterController);
+
+        // Process controller parameters with the ParamConverter instances
+        $this->listener->onKernelController($filterController);
+
+        // Put the Symfony request attributes back into the laravel route.
+        foreach ($request->attributes as $key => $attribute) {
+            /** @noinspection UnsupportedStringOffsetOperationsInspection */
+            $route[2][$key] = $attribute;
+        }
+
+        $request->setRouteResolver(static function () use ($route) {
+            return $route;
+        });
 
         return $next($request);
     }

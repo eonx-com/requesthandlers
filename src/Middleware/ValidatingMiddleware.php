@@ -33,6 +33,8 @@ class ValidatingMiddleware
      * @param \Closure $next
      *
      * @return mixed
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException
      */
     public function handle(Request $request, Closure $next)
     {
@@ -51,24 +53,37 @@ class ValidatingMiddleware
              * @var \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface $parameter
              */
 
+            $this->validateWithGroups(['PreValidate'], $parameter);
+
             $groups = $parameter->resolveValidationGroups();
             $groups[] = 'Default';
 
-            $violations = $this->validator->validate(
-                $parameter,
-                null,
-                $groups
-            );
-
-            if ($violations->count() === 0) {
-                continue;
-            }
-
-            $exceptionClass = $parameter::getExceptionClass();
-
-            throw new $exceptionClass($violations);
+            $this->validateWithGroups($groups, $parameter);
         }
 
         return $next($request);
+    }
+
+    /**
+     * Validates the request object with the specified groups.
+     *
+     * @param string[] $groups
+     * @param \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface $requestObject
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException
+     */
+    private function validateWithGroups(array $groups, RequestObjectInterface $requestObject): void
+    {
+        $violations = $this->validator->validate($requestObject, null, $groups);
+
+        if ($violations->count() === 0) {
+            return;
+        }
+
+        $exceptionClass = $requestObject::getExceptionClass();
+
+        throw new $exceptionClass($violations);
     }
 }
