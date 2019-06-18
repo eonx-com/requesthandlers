@@ -13,14 +13,14 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ValidatorStub implements ValidatorInterface
 {
     /**
-     * @var \Symfony\Component\Validator\ConstraintViolation[]
+     * @var \Symfony\Component\Validator\ConstraintViolation[][]
      */
     private $violations;
 
     /**
      * Constructor
      *
-     * @param \Symfony\Component\Validator\ConstraintViolation[]|null $violations
+     * @param \Symfony\Component\Validator\ConstraintViolation[][]|null $violations
      */
     public function __construct(?array $violations = null)
     {
@@ -60,7 +60,7 @@ class ValidatorStub implements ValidatorInterface
      */
     public function validate($value, $constraints = null, $groups = null)
     {
-        return new ConstraintViolationList($this->violations);
+        return new ConstraintViolationList(\array_shift($this->violations) ?? []);
     }
 
     /**
