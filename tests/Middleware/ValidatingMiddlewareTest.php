@@ -144,7 +144,7 @@ class ValidatingMiddlewareTest extends TestCase
     public function testHandleViolationInPreValidate(): void
     {
         $violation1 = new ConstraintViolation('PreValidate', null, [], null, null, null);
-        $violation2 = new ConstraintViolation('PostValidate', null, [], null, null, null);
+        $violation2 = new ConstraintViolation('StandardValidation', null, [], null, null, null);
         $validator = new ValidatorStub([
             // PreValidate violation
             [$violation1],
