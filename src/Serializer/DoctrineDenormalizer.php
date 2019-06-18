@@ -52,6 +52,12 @@ class DoctrineDenormalizer implements DenormalizerInterface
             return $data;
         }
 
+        if ($data === null) {
+            // No point trying to find anything when we got a null.
+
+            return null;
+        }
+
         // entity criteria
         $criteria = [];
 

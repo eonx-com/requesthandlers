@@ -55,6 +55,23 @@ class DoctrineDenormalizerTest extends TestCase
     }
 
     /**
+     * Tests denormalize null
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizeNull(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+        $denormalizer = new DoctrineDenormalizer($registry);
+
+        $result = $denormalizer->denormalize(null, 'EntityClass');
+        self::assertNull($result);
+    }
+
+    /**
      * Tests denormalize
      *
      * @return void
