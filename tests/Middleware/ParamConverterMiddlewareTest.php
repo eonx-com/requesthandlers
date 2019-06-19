@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\LoyaltyCorp\RequestHandlers\Middleware;
 
+use EoneoPay\Utils\Bridge\Lumen\Resolvers\ControllerResolver;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use LoyaltyCorp\RequestHandlers\Middleware\ParamConverterMiddleware;
@@ -19,8 +20,6 @@ class ParamConverterMiddlewareTest extends TestCase
      * Tests handle
      *
      * @return void
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function testHandle(): void
     {
@@ -40,8 +39,8 @@ class ParamConverterMiddlewareTest extends TestCase
         $paramListener = $this->createMock(ParamConverterListener::class);
 
         $middleware = new ParamConverterMiddleware(
-            $container,
             $controllerListener,
+            new ControllerResolver($container),
             $paramListener
         );
 
@@ -72,8 +71,6 @@ class ParamConverterMiddlewareTest extends TestCase
      * Tests handle with bad route
      *
      * @return void
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function testHandleBadRoute(): void
     {
@@ -82,8 +79,8 @@ class ParamConverterMiddlewareTest extends TestCase
         $paramListener = $this->createMock(ParamConverterListener::class);
 
         $middleware = new ParamConverterMiddleware(
-            $container,
             $controllerListener,
+            new ControllerResolver($container),
             $paramListener
         );
 
@@ -101,8 +98,6 @@ class ParamConverterMiddlewareTest extends TestCase
      * Test handle works gracefully when the route calls non existent action
      *
      * @return void
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function testHandleWhenRouteActionDoesNotExist(): void
     {
@@ -116,8 +111,8 @@ class ParamConverterMiddlewareTest extends TestCase
         $paramListener = $this->createMock(ParamConverterListener::class);
 
         $middleware = new ParamConverterMiddleware(
-            $container,
             $controllerListener,
+            new ControllerResolver($container),
             $paramListener
         );
 

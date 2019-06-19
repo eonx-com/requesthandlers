@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace LoyaltyCorp\RequestHandlers\Middleware;
 
 use Closure;
-use Illuminate\Contracts\Container\Container;
+use EoneoPay\Utils\Bridge\Lumen\Resolvers\ControllerResolver;
 use Illuminate\Http\Request;
 use LoyaltyCorp\RequestHandlers\Event\FilterControllerEvent;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener;
@@ -13,14 +13,14 @@ use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
 class ParamConverterMiddleware
 {
     /**
-     * @var \Illuminate\Contracts\Container\Container
-     */
-    private $container;
-
-    /**
      * @var \Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener
      */
     private $controllerListener;
+
+    /**
+     * @var \EoneoPay\Utils\Bridge\Lumen\Resolvers\ControllerResolver
+     */
+    private $controllerResolver;
 
     /**
      * @var \Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener
@@ -30,17 +30,17 @@ class ParamConverterMiddleware
     /**
      * Constructor
      *
-     * @param \Illuminate\Contracts\Container\Container $container
      * @param \Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener $controllerListener
+     * @param \EoneoPay\Utils\Bridge\Lumen\Resolvers\ControllerResolver $controllerResolver
      * @param \Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener $converterListener
      */
     public function __construct(
-        Container $container,
         ControllerListener $controllerListener,
+        ControllerResolver $controllerResolver,
         ParamConverterListener $converterListener
     ) {
-        $this->container = $container;
         $this->controllerListener = $controllerListener;
+        $this->controllerResolver = $controllerResolver;
         $this->listener = $converterListener;
     }
 
@@ -51,8 +51,6 @@ class ParamConverterMiddleware
      * @param \Closure $next
      *
      * @return mixed
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function handle(Request $request, Closure $next)
     {
@@ -62,7 +60,7 @@ class ParamConverterMiddleware
         }
 
         // Resolve the controller callable based on the request.
-        $controller = $this->resolveController($route);
+        $controller = $this->controllerResolver->resolve($route);
 
         if ($controller === null) {
             // Controller is not callable, continue with other middleware
@@ -93,28 +91,5 @@ class ParamConverterMiddleware
         });
 
         return $next($request);
-    }
-
-    /**
-     * Resolves the route into a callable controller.
-     *
-     * @param mixed[] $route
-     *
-     * @return callable|null
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     */
-    private function resolveController(array $route): ?callable
-    {
-        $uses = $route[1]['uses'] ?? null;
-        $split = \explode('@', $uses);
-
-        $callableAction = [$this->container->make($split[0]), $split[1]];
-
-        if (\is_callable($callableAction) === false) {
-            return null;
-        }
-
-        return $callableAction;
     }
 }
