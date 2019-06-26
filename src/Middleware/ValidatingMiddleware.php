@@ -44,7 +44,7 @@ class ValidatingMiddleware
         }
 
         /** @noinspection ForeachSourceInspection Laravel's $route parameter is an array of properties */
-        foreach ($route[2] as $parameter) {
+        foreach ($route[2] ?? [] as $parameter) {
             if (($parameter instanceof RequestObjectInterface) === false) {
                 continue;
             }

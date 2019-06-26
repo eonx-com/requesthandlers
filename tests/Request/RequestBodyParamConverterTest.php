@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\LoyaltyCorp\RequestHandlers\Request;
 
 use FOS\RestBundle\Serializer\SymfonySerializerAdapter;
+use LoyaltyCorp\RequestHandlers\Exceptions\InvalidContentTypeException;
 use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
 use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
 use RuntimeException;
@@ -30,7 +31,7 @@ class RequestBodyParamConverterTest extends TestCase
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer->expects(self::once())
             ->method('deserialize')
-            ->with('body', 'EntityClass', null, [
+            ->with('body', 'EntityClass', 'json', [
                 PropertyNormalizer::EXTRA_PARAMETERS => [
                     'attribute' => 'value'
                 ],
@@ -41,7 +42,7 @@ class RequestBodyParamConverterTest extends TestCase
 
         $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
 
-        $request = new Request([], [], [], [], [], [], 'body');
+        $request = new Request([], [], [], [], [], ['HTTP_CONTENT_TYPE' => 'application/json'], 'body');
         $request->attributes->set('attribute', 'value');
 
         $converter->apply($request, new ParamConverter([
@@ -65,9 +66,34 @@ class RequestBodyParamConverterTest extends TestCase
 
         $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
 
-        $request = new Request();
+        $request = new Request([], [], [], [], [], ['HTTP_CONTENT_TYPE' => 'application/json'], 'body');
 
         $this->expectException(RuntimeException::class);
+
+        $converter->apply($request, new ParamConverter([
+            'class' => 'EntityClass'
+        ]));
+    }
+
+    /**
+     * Tests that the param converter applies and configures the context
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    public function testApplyWithNoContentType(): void
+    {
+        $this->expectException(InvalidContentTypeException::class);
+
+        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer->expects(self::once())
+            ->method('deserialize')
+            ->willThrowException(new RuntimeException());
+
+        $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
+
+        $request = new Request();
 
         $converter->apply($request, new ParamConverter([
             'class' => 'EntityClass'
