@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\LoyaltyCorp\RequestHandlers\Request;
 
 use FOS\RestBundle\Serializer\SymfonySerializerAdapter;
+use LoyaltyCorp\RequestHandlers\Exceptions\InvalidContentTypeException;
 use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
 use RuntimeException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -57,7 +58,34 @@ class RequestBodyParamConverterTest extends TestCase
         $serializer = new SerializerStub(new RuntimeException());
         $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
 
-        $request = $this->buildRequest('application/json');
+        $request = new Request([], [], [], [], [], ['HTTP_CONTENT_TYPE' => 'application/json'], 'body');
+
+        $this->expectException(RuntimeException::class);
+
+        $converter->apply($request, new ParamConverter([
+            'class' => 'EntityClass'
+        ]));
+    }
+
+    /**
+     * Tests that the param converter applies and configures the context
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    public function testApplyWithNoContentType(): void
+    {
+        $this->expectException(InvalidContentTypeException::class);
+
+        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer->expects(self::once())
+            ->method('deserialize')
+            ->willThrowException(new RuntimeException());
+
+        $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
+
+        $request = new Request();
 
         $converter->apply($request, new ParamConverter([
             'class' => 'EntityClass'

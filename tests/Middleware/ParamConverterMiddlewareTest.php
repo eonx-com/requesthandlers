@@ -68,6 +68,51 @@ class ParamConverterMiddlewareTest extends TestCase
     }
 
     /**
+     * Tests handle route with no parameters
+     *
+     * @return void
+     */
+    public function testHandleRouteNoParams(): void
+    {
+        $container = new Container();
+        $container->instance('Class', new class
+        {
+            /**
+             * Method for test
+             *
+             * @return void
+             */
+            public function method(): void
+            {
+            }
+        });
+        $controllerListener = $this->createMock(ControllerListener::class);
+        $paramListener = $this->createMock(ParamConverterListener::class);
+
+        $middleware = new ParamConverterMiddleware(
+            $controllerListener,
+            new ControllerResolver($container),
+            $paramListener
+        );
+
+        $request = new Request();
+        $request->setRouteResolver(static function () {
+            return [
+                null,
+                ['uses' => 'Class@method']
+            ];
+        });
+        $next = static function () {
+            return 'hello';
+        };
+
+        $result = $middleware->handle($request, $next);
+
+        // No fatal error occurred
+        static::assertSame('hello', $result);
+    }
+
+    /**
      * Tests handle with bad route
      *
      * @return void

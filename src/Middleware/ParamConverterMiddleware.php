@@ -69,7 +69,7 @@ final class ParamConverterMiddleware
 
         // Add laravel route attributes to the symfony request attribute bag so the
         // symfony dependencies will work as expected.
-        $request->attributes->add($route[2]);
+        $request->attributes->add($route[2] ?? []);
 
         // Create a faux FilterControllerEvent for use in the symfony dependencies below.
         $filterController = new FilterControllerEvent($controller, $request);
