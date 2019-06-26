@@ -34,6 +34,7 @@ class RequestBodyParamConverterTest extends TestCase
         $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
 
         $request = $this->buildRequest('application/json', '{"content": "here"}');
+
         $request->attributes->set('attribute', 'value');
 
         $converter->apply($request, new ParamConverter([
@@ -79,6 +80,7 @@ class RequestBodyParamConverterTest extends TestCase
         $this->expectException(InvalidContentTypeException::class);
 
         $serializer = new SerializerStub(new RuntimeException());
+
         $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
 
         $request = new Request();
