@@ -4,7 +4,10 @@ declare(strict_types=1);
 namespace Tests\LoyaltyCorp\RequestHandlers\Exceptions;
 
 use LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException;
+use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
+use Tests\App\Stubs\Http\Exceptions\Requests\BaseRequestValidationExceptionStub;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Exceptions\RequestValidationExceptionStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**
@@ -20,25 +23,37 @@ class RequestValidationExceptionTest extends TestCase
     public function testExceptionMethods(): void
     {
         $violations = new ConstraintViolationList();
-        $exception = new class($violations) extends RequestValidationException {
-            /**
-             * {@inheritdoc}
-             */
-            public function getErrorCode(): int
-            {
-                return 1;
-            }
-
-            /**
-             * {@inheritdoc}
-             */
-            public function getErrorSubCode(): int
-            {
-                return 1;
-            }
-        };
+        $exception = new RequestValidationExceptionStub($violations);
 
         self::assertSame(400, $exception->getStatusCode());
         self::assertSame($violations, $exception->getViolations());
+    }
+
+    /**
+     * Tests base exception methods
+     *
+     * @return void
+     */
+    public function testBaseException(): void
+    {
+        $violations = new ConstraintViolationList();
+        $violations->add(new ConstraintViolation(
+            'Message',
+            'Mesasge',
+            [],
+            'root',
+            'path',
+            'invalid'
+        ));
+
+        $expected = [
+            'path' => [
+                'Message'
+            ]
+        ];
+
+        $exception = new RequestValidationExceptionStub($violations);
+
+        self::assertSame($expected, $exception->getErrors());
     }
 }
