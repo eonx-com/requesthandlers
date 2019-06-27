@@ -88,6 +88,8 @@ final class RequestBodyParamConverter extends BaseRequestBodyParamConverter
      */
     protected function configureContext(Context $context, array $options): void
     {
+        $context->setAttribute(PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT, true);
+
         if ($this->request !== null && $this->configuration !== null) {
             $context->setAttribute(
                 PropertyNormalizer::EXTRA_PARAMETERS,
