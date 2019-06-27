@@ -30,7 +30,7 @@ class TestRequest implements RequestObjectInterface
      *
      * @return mixed
      */
-    public function getProperty(): ?string
+    public function getProperty()
     {
         return $this->property;
     }

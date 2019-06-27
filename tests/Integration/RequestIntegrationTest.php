@@ -43,6 +43,8 @@ use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 /**
  * Tests all services defined and required by this package as a single unit
  * to ensure that the expected behaviour is correct.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class RequestIntegrationTest extends TestCase
 {
@@ -52,6 +54,8 @@ class RequestIntegrationTest extends TestCase
      * @return string[]
      *
      * @throws \EoneoPay\Utils\Exceptions\InvalidDateTimeStringException
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function getSuccessData(): iterable
     {

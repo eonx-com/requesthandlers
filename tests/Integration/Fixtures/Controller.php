@@ -21,6 +21,8 @@ class Controller
      * @param \Tests\LoyaltyCorp\RequestHandlers\Integration\Fixtures\ThingRequest $request
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function doThing(string $baz, ThingRequest $request): void
     {

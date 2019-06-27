@@ -47,3 +47,6 @@ parameters:
         -
             message: '#Call to static method PHPUnit\\Framework\\Assert::assertInstanceOf\(\) with (.*) and Symfony\\Component\\Serializer\\Exception\\NotNormalizableValueException will always evaluate to true\.#'
             path: tests/Serializer/RequestBodySerializerTest.php
+        -
+            message: '#Cannot access offset 2 on object\|string\.#'
+            path: tests/Integration/RequestIntegrationTest.php

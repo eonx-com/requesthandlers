@@ -78,11 +78,7 @@ class RequestBodyParamConverterTest extends TestCase
     {
         $this->expectException(InvalidContentTypeException::class);
 
-        $serializer = $this->createMock(SerializerInterface::class);
-        $serializer->expects(self::once())
-            ->method('deserialize')
-            ->willThrowException(new RuntimeException());
-
+        $serializer = new SerializerStub(new RuntimeException());
         $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
 
         $request = new Request();

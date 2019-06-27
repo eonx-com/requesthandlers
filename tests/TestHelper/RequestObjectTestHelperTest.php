@@ -136,7 +136,7 @@ class RequestObjectTestHelperTest extends TestCase
      * Gets helper under test.
      *
      * @param \Throwable|object $object
-     * @param \Symfony\Component\Validator\ConstraintViolationInterface[][]|null $violations
+     * @param \Symfony\Component\Validator\ConstraintViolation[][]|null $violations
      *
      * @return \LoyaltyCorp\RequestHandlers\TestHelper\RequestObjectTestHelper
      */
