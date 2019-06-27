@@ -51,7 +51,6 @@ abstract class RequestValidationException extends BaseException
         $converter = new CamelCaseToSnakeCaseNameConverter();
 
         foreach ($this->getViolations() as $violation) {
-            /** @var \Symfony\Component\Validator\ConstraintViolationInterface $violation */
             $path = $converter->normalize($violation->getPropertyPath());
             $errors[$path] = $errors[$path] ?? [];
 
