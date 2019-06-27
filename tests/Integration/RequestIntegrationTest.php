@@ -3,40 +3,18 @@ declare(strict_types=1);
 
 namespace Tests\LoyaltyCorp\RequestHandlers\Integration;
 
-use DateTime as BaseDateTime;
-use DateTimeZone;
-use EoneoPay\Utils\AnnotationReader;
-use EoneoPay\Utils\Bridge\Lumen\Resolvers\ControllerResolver;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use EoneoPay\Utils\DateTime;
-use FOS\RestBundle\Serializer\SymfonySerializerAdapter;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline;
+use LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers\ParamConverterProvider;
 use LoyaltyCorp\RequestHandlers\Middleware\ParamConverterMiddleware;
 use LoyaltyCorp\RequestHandlers\Middleware\ValidatingMiddleware;
-use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
-use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
-use LoyaltyCorp\RequestHandlers\Serializer\RequestBodySerializer;
-use Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener;
-use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterManager;
-use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
-use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\DateIntervalNormalizer;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\ConstraintValidatorFactory;
-use Symfony\Component\Validator\Validation;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tests\LoyaltyCorp\RequestHandlers\Integration\Fixtures\Controller;
 use Tests\LoyaltyCorp\RequestHandlers\Integration\Fixtures\ThingRequest;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Exceptions\RequestValidationExceptionStub;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Doctrine\Common\Persistence\ManagerRegistryStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Illuminate\Contracts\Foundation\ApplicationStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
@@ -330,53 +308,23 @@ VIOLATIONS;
     }
 
     /**
-     * Builds the ParamConverterManager
-     *
-     * @param \Symfony\Component\Serializer\SerializerInterface $serializer
-     *
-     * @return \Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterManager
-     */
-    private function buildParamConverters(SerializerInterface $serializer): ParamConverterManager
-    {
-        $requestBody = new RequestBodyParamConverter(
-            new SymfonySerializerAdapter($serializer)
-        );
-
-        $manager = new ParamConverterManager();
-        $manager->add($requestBody);
-
-        return $manager;
-    }
-
-    /**
      * Builds the full chain of dependencies.
      *
      * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Pipeline\Pipeline
      *
-     * @throws \EoneoPay\Utils\Exceptions\AnnotationCacheException
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     private function buildPipeline(Request $request): Pipeline
     {
-        $annotationReader = new AnnotationReader();
-        $container = new ApplicationStub();
+        $app = new ApplicationStub();
+        $app->instance(Container::class, $app);
+        $app->instance(ManagerRegistry::class, new ManagerRegistryStub());
+        (new ParamConverterProvider($app))->register();
 
-        $serializer = $this->buildSerializer($annotationReader);
-        $validator = $this->buildValidator($annotationReader);
-        $paramConverters = $this->buildParamConverters($serializer);
-
-        $controllerListener = new ControllerListener($annotationReader);
-        $controllerResolver = new ControllerResolver($container);
-        $converterListener = new ParamConverterListener($paramConverters);
-
-        $pcm = new ParamConverterMiddleware(
-            $controllerListener,
-            $controllerResolver,
-            $converterListener
-        );
-
-        $validatingMiddleware = new ValidatingMiddleware($validator);
+        $pcm = $app->make(ParamConverterMiddleware::class);
+        $validatingMiddleware = $app->make(ValidatingMiddleware::class);
 
         $pipeline = new Pipeline(null);
         $pipeline->send($request);
@@ -417,70 +365,5 @@ VIOLATIONS;
         );
 
         return $request;
-    }
-
-    /**
-     * Builds the serializer under test.
-     *
-     * @param \EoneoPay\Utils\AnnotationReader $reader
-     *
-     * @return \LoyaltyCorp\RequestHandlers\Serializer\RequestBodySerializer
-     */
-    private function buildSerializer(AnnotationReader $reader): RequestBodySerializer
-    {
-        $metadataFactory = new ClassMetadataFactory(new AnnotationLoader($reader));
-
-        $reflectionExtractor = new ReflectionExtractor();
-        $phpDocExtractor = new PhpDocExtractor();
-
-        $normalizers = [
-            new ArrayDenormalizer(),
-            new DateIntervalNormalizer(
-                [
-                    DateIntervalNormalizer::FORMAT_KEY => 'P%mM'
-                ]
-            ),
-            new DateTimeNormalizer(
-                [
-                    DateTimeNormalizer::FORMAT_KEY => BaseDateTime::RFC3339
-                ],
-                new DateTimeZone('UTC')
-            ),
-            new PropertyNormalizer(
-                $metadataFactory,
-                new CamelCaseToSnakeCaseNameConverter(),
-                new PropertyInfoExtractor(
-                    [$reflectionExtractor],
-                    [$phpDocExtractor],
-                    [$phpDocExtractor],
-                    [$reflectionExtractor],
-                    [$reflectionExtractor]
-                )
-            )
-        ];
-
-        $encoders = [
-            new JsonEncoder(),
-            new XmlEncoder()
-        ];
-
-        return new RequestBodySerializer($normalizers, $encoders);
-    }
-
-    /**
-     * Builds the validator under test.
-     *
-     * @param \EoneoPay\Utils\AnnotationReader $reader
-     *
-     * @return \Symfony\Component\Validator\Validator\ValidatorInterface
-     */
-    private function buildValidator(AnnotationReader $reader): ValidatorInterface
-    {
-        $constraintFactory = new ConstraintValidatorFactory();
-
-        return Validation::createValidatorBuilder()
-            ->enableAnnotationMapping($reader)
-            ->setConstraintValidatorFactory($constraintFactory)
-            ->getValidator();
     }
 }

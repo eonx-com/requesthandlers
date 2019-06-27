@@ -66,8 +66,9 @@ class ManagerRegistryStub implements ManagerRegistry
     /**
      * {@inheritdoc}
      */
-    public function getManagerNames()
+    public function getManagerNames(): array
     {
+        return [];
     }
 
     /**
