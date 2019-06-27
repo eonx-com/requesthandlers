@@ -37,7 +37,7 @@ class RequestValidationExceptionTest extends TestCase
         $violations = new ConstraintViolationList();
         $violations->add(new ConstraintViolation(
             'Message',
-            'Mesasge',
+            'Message',
             [],
             'root',
             'path',
