@@ -3,10 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\LoyaltyCorp\RequestHandlers\Exceptions;
 
-use LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
-use Tests\App\Stubs\Http\Exceptions\Requests\BaseRequestValidationExceptionStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Exceptions\RequestValidationExceptionStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
