@@ -4,6 +4,9 @@ declare(strict_types=1);
 /**
  * @coversNothing
  */
+
+use Doctrine\Common\Annotations\AnnotationRegistry;
+
 if (\function_exists('xdebug_set_filter') === false) {
     return;
 }
@@ -15,3 +18,8 @@ if (\function_exists('xdebug_set_filter') === false) {
     \XDEBUG_PATH_WHITELIST,
     [\sprintf('%s/src', \dirname(__DIR__))]
 );
+
+require_once __DIR__.'/../vendor/autoload.php';
+
+// Until Doctrine Annotations v2.0, we need to register an autoloader, which is just 'class_exists'.
+AnnotationRegistry::registerUniqueLoader('class_exists');
