@@ -13,7 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInte
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class DoctrineParamConverter implements ParamConverterInterface
+final class DoctrineParamConverter implements ParamConverterInterface
 {
     /**
      * @var \Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter

@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Serializer as BaseSerializer;
  * it contains a custom feature that ignores normalisation errors, which isnt useful for
  * standard deserialisation.
  */
-class RequestBodySerializer extends BaseSerializer
+final class RequestBodySerializer extends BaseSerializer
 {
     /**
      * @var \Symfony\Component\Serializer\Exception\NotNormalizableValueException[]

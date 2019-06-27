@@ -10,7 +10,7 @@ use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 
-class RequestBodyParamConverter extends BaseRequestBodyParamConverter
+final class RequestBodyParamConverter extends BaseRequestBodyParamConverter
 {
     /**
      * Stores the configuration so we can add some detail to the serializer

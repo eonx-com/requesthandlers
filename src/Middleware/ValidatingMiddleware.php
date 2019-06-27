@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class ValidatingMiddleware
+final class ValidatingMiddleware
 {
     /**
      * @var \Symfony\Component\Validator\Validator\ValidatorInterface

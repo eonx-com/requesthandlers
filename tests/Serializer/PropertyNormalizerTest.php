@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Tests\LoyaltyCorp\RequestHandlers\Serializer;
 
 use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
+use ReflectionClass;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\RequestObjectStub;
-use Tests\LoyaltyCorp\RequestHandlers\Stubs\Serializer\PropertyNormalizerStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**
@@ -18,12 +18,20 @@ class PropertyNormalizerTest extends TestCase
      * Tests createChildContext
      *
      * @return void
+     *
+     * @throws \ReflectionException
      */
     public function testCreateChildContext(): void
     {
-        $normalizer = new PropertyNormalizerStub(null, new CamelCaseToSnakeCaseNameConverter());
+        $normalizer = new PropertyNormalizer(null, new CamelCaseToSnakeCaseNameConverter());
 
-        $context = $normalizer->createChildContext([], 'attributeName');
+        // There is no simple way to test this method call, so lets use the Reflection approach.
+        // Bad idea, do not copy.
+        $reflectionClass = new ReflectionClass($normalizer);
+        $method = $reflectionClass->getMethod('createChildContext');
+        $method->setAccessible(true);
+
+        $context = $method->invoke($normalizer, [], 'attributeName');
 
         static::assertSame('attribute_name', $context['attribute']);
     }
@@ -32,12 +40,20 @@ class PropertyNormalizerTest extends TestCase
      * Tests createChildContext when no NameConverter exists
      *
      * @return void
+     *
+     * @throws \ReflectionException
      */
     public function testCreateChildContextWithoutNameConverter(): void
     {
-        $normalizer = new PropertyNormalizerStub();
+        $normalizer = new PropertyNormalizer();
 
-        $context = $normalizer->createChildContext([], 'attributeName');
+        // There is no simple way to test this method call, so lets use the Reflection approach.
+        // Bad idea, do not copy.
+        $reflectionClass = new ReflectionClass($normalizer);
+        $method = $reflectionClass->getMethod('createChildContext');
+        $method->setAccessible(true);
+
+        $context = $method->invoke($normalizer, [], 'attributeName');
 
         static::assertSame('attributeName', $context['attribute']);
     }

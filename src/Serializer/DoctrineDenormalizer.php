@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
  * A denormalizer that accepts an array for a typed managed entity class
  * and looks up the id key of that array and returns an entity if it exists.
  */
-class DoctrineDenormalizer implements DenormalizerInterface
+final class DoctrineDenormalizer implements DenormalizerInterface
 {
     /**
      * Class-key mapping for finding entity.

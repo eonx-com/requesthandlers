@@ -5,7 +5,7 @@ namespace LoyaltyCorp\RequestHandlers\Serializer;
 
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer as BasePropertyNormalizer;
 
-class PropertyNormalizer extends BasePropertyNormalizer
+final class PropertyNormalizer extends BasePropertyNormalizer
 {
     /**
      * Allows for the addition of extra properties to be set when denormalizing

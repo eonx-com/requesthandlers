@@ -51,7 +51,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects) Coupling required to bind services
  */
-class ParamConverterProvider extends ServiceProvider
+final class ParamConverterProvider extends ServiceProvider
 {
     /**
      * @noinspection PhpMissingParentCallCommonInspection
