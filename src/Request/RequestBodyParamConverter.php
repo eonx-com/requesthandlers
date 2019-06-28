@@ -6,6 +6,7 @@ namespace LoyaltyCorp\RequestHandlers\Request;
 use Exception;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Request\RequestBodyParamConverter as BaseRequestBodyParamConverter;
+use LoyaltyCorp\RequestHandlers\Exceptions\InvalidContentTypeException;
 use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,6 +40,12 @@ final class RequestBodyParamConverter extends BaseRequestBodyParamConverter
     {
         $this->configuration = $configuration;
         $this->request = $request;
+
+        if ($request->getContentType() === null) {
+            throw new InvalidContentTypeException(
+                'Request has no content type when one is required for this Converter.'
+            );
+        }
 
         try {
             $result = parent::apply($request, $configuration);
@@ -81,6 +88,8 @@ final class RequestBodyParamConverter extends BaseRequestBodyParamConverter
      */
     protected function configureContext(Context $context, array $options): void
     {
+        $context->setAttribute(PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT, true);
+
         if ($this->request !== null && $this->configuration !== null) {
             $context->setAttribute(
                 PropertyNormalizer::EXTRA_PARAMETERS,

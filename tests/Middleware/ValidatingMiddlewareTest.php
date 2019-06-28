@@ -84,6 +84,33 @@ class ValidatingMiddlewareTest extends TestCase
     }
 
     /**
+     * Tests middleware handle method when there are no parameters
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException
+     */
+    public function testHandleMissingParams(): void
+    {
+        $validator = new ValidatorStub();
+
+        $middleware = new ValidatingMiddleware($validator);
+
+        $request = new Request();
+        $request->setRouteResolver(static function () {
+            return [null, null];
+        });
+
+        $next = static function () {
+            return 'hello';
+        };
+
+        $result = $middleware->handle($request, $next);
+
+        self::assertSame('hello', $result);
+    }
+
+    /**
      * Tests middleware handle method when there is no route
      *
      * @return void
