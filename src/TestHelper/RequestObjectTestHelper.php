@@ -85,6 +85,7 @@ final class RequestObjectTestHelper
             $class,
             'json',
             [
+                PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
                 PropertyNormalizer::EXTRA_PARAMETERS => $context ?? []
             ]
         );
