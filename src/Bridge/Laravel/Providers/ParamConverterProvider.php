@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers;
 
 use DateTime;
+use DateTimeZone;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use EoneoPay\Utils\AnnotationReader;
@@ -51,7 +52,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects) Coupling required to bind services
  */
-class ParamConverterProvider extends ServiceProvider
+final class ParamConverterProvider extends ServiceProvider
 {
     /**
      * @noinspection PhpMissingParentCallCommonInspection
@@ -170,7 +171,7 @@ class ParamConverterProvider extends ServiceProvider
         $this->app->singleton(DateTimeNormalizer::class, static function (Container $app): DateTimeNormalizer {
             return new DateTimeNormalizer([
                 DateTimeNormalizer::FORMAT_KEY => DateTime::RFC3339
-            ]);
+            ], new DateTimeZone('UTC'));
         });
         $this->app->singleton(DoctrineDenormalizer::class);
         $this->app->singleton(PropertyNormalizer::class, static function (Container $app): PropertyNormalizer {

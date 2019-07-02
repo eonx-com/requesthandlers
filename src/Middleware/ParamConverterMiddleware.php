@@ -10,7 +10,7 @@ use LoyaltyCorp\RequestHandlers\Event\FilterControllerEvent;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
 
-class ParamConverterMiddleware
+final class ParamConverterMiddleware
 {
     /**
      * @var \Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener

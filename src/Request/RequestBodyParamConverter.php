@@ -11,7 +11,7 @@ use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 
-class RequestBodyParamConverter extends BaseRequestBodyParamConverter
+final class RequestBodyParamConverter extends BaseRequestBodyParamConverter
 {
     /**
      * Stores the configuration so we can add some detail to the serializer
@@ -88,6 +88,8 @@ class RequestBodyParamConverter extends BaseRequestBodyParamConverter
      */
     protected function configureContext(Context $context, array $options): void
     {
+        $context->setAttribute(PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT, true);
+
         if ($this->request !== null && $this->configuration !== null) {
             $context->setAttribute(
                 PropertyNormalizer::EXTRA_PARAMETERS,
