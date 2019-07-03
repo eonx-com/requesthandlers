@@ -68,7 +68,26 @@ class DoctrineDenormalizerTest extends TestCase
         $denormalizer = new DoctrineDenormalizer($registry);
 
         $result = $denormalizer->denormalize(null, 'EntityClass');
+
         self::assertNull($result);
+    }
+
+    /**
+     * Tests denormalize scalar
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizeScalar(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+        $denormalizer = new DoctrineDenormalizer($registry);
+
+        $result = $denormalizer->denormalize('purple', 'EntityClass');
+
+        self::assertSame('purple', $result);
     }
 
     /**

@@ -52,10 +52,10 @@ final class DoctrineDenormalizer implements DenormalizerInterface
             return $data;
         }
 
-        if ($data === null) {
+        if ($data === null || \is_array($data) === false) {
             // No point trying to find anything when we got a null.
 
-            return null;
+            return $data;
         }
 
         // entity criteria
@@ -85,11 +85,15 @@ final class DoctrineDenormalizer implements DenormalizerInterface
     public function supportsDenormalization($data, $type, $format = null): bool
     {
         $manager = $this->managerRegistry->getManagerForClass($type);
-        if ($manager === null) {
+
+        if ($manager === null ||
+            $manager->getMetadataFactory()->isTransient($type) !== false
+        ) {
             return false;
         }
 
-        return $manager->getMetadataFactory()->isTransient($type) === false;
+        // Only support denormalization when $data is an array
+        return \is_array($data) === true;
     }
 
     /**
