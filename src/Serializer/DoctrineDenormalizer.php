@@ -53,7 +53,8 @@ final class DoctrineDenormalizer implements DenormalizerInterface
         }
 
         if ($data === null || \is_array($data) === false) {
-            // No point trying to find anything when we got a null.
+            // If the data is null or we didnt get an array, just return the data
+            // so that the object can be validated with the user supplied data.
 
             return $data;
         }
@@ -86,14 +87,11 @@ final class DoctrineDenormalizer implements DenormalizerInterface
     {
         $manager = $this->managerRegistry->getManagerForClass($type);
 
-        if ($manager === null ||
-            $manager->getMetadataFactory()->isTransient($type) !== false
-        ) {
+        if ($manager === null) {
             return false;
         }
 
-        // Only support denormalization when $data is an array
-        return \is_array($data) === true;
+        return $manager->getMetadataFactory()->isTransient($type) === false;
     }
 
     /**
