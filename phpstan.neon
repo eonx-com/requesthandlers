@@ -50,3 +50,6 @@ parameters:
         -
             message: '#Cannot access offset 2 on object\|string\.#'
             path: tests/Integration/RequestIntegrationTest.php
+        -
+            message: '#Call to static method PHPUnit\\Framework\\Assert::assertSame\(\) with .purple. and object will always evaluate to false\.#'
+            path: tests/Serializer/DoctrineDenormalizerTest.php
