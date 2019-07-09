@@ -117,7 +117,9 @@ final class ParamConverterProvider extends ServiceProvider
                 );
             }
         );
-        $this->app->singleton(ParamConverterListener::class);
+        $this->app->singleton(ParamConverterListener::class, static function (Container $app): ParamConverterListener {
+            return new ParamConverterListener($app->make(ParamConverterManager::class), false);
+        });
         $this->app->singleton(
             ParamConverterManager::class,
             static function (Container $app): ParamConverterManager {
