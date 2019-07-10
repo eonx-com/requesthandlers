@@ -7,6 +7,8 @@ use stdClass;
 
 /**
  * @coversNothing
+ *
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class TestController
 {

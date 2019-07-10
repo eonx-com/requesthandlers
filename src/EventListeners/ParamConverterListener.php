@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace LoyaltyCorp\RequestHandlers\EventListeners;
 
 use LoyaltyCorp\RequestHandlers\Exceptions\InvalidRequestAttributeException;
+use LoyaltyCorp\RequestHandlers\Exceptions\ParamConverterMisconfiguredException;
 use LoyaltyCorp\RequestHandlers\Request\Interfaces\ParamConverterManagerInterface;
 use ReflectionFunctionAbstract;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -80,6 +81,9 @@ class ParamConverterListener implements EventSubscriberInterface
      * @return void
      *
      * @throws \ReflectionException
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\ParamConverterMisconfiguredException
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity) Method is complicated.
      */
     private function configureTypes(array $configurations, callable $controller): void
     {
@@ -103,7 +107,6 @@ class ParamConverterListener implements EventSubscriberInterface
 
             if ($class !== null && $configuration->getClass() === null) {
                 // Configuration does not have a class set, but we have one.
-
                 $configuration->setClass($class->getName());
             }
 
@@ -165,6 +168,7 @@ class ParamConverterListener implements EventSubscriberInterface
      * @return \ReflectionFunctionAbstract
      *
      * @throws \ReflectionException
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\ParamConverterMisconfiguredException
      */
     private function getReflection(callable $controller): ReflectionFunctionAbstract
     {
@@ -176,6 +180,13 @@ class ParamConverterListener implements EventSubscriberInterface
             return new \ReflectionMethod($controller, '__invoke');
         }
 
-        return new \ReflectionFunction($controller);
+        if (\is_string($controller)) {
+            return new \ReflectionFunction($controller);
+        }
+
+        // @codeCoverageIgnoreStart
+        // This shouldnt happen with the callable typehint, but is a protection incase it can.
+        throw new ParamConverterMisconfiguredException('Provided callable isn\'t callable.');
+        // @codeCoverageIgnoreEnd
     }
 }

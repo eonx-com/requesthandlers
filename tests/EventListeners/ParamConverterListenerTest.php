@@ -6,6 +6,7 @@ namespace Tests\LoyaltyCorp\RequestHandlers\EventListeners;
 use LoyaltyCorp\RequestHandlers\Event\FilterControllerEvent;
 use LoyaltyCorp\RequestHandlers\EventListeners\ParamConverterListener;
 use LoyaltyCorp\RequestHandlers\Exceptions\InvalidRequestAttributeException;
+use LoyaltyCorp\RequestHandlers\Exceptions\ParamConverterMisconfiguredException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use stdClass;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +17,8 @@ use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**
  * @covers \LoyaltyCorp\RequestHandlers\EventListeners\ParamConverterListener
+ *
+ * @SuppressWarnings(PHPMD.StaticAccess) Listener interface requires static call
  */
 class ParamConverterListenerTest extends TestCase
 {

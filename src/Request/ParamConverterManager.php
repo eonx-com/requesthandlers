@@ -52,11 +52,13 @@ class ParamConverterManager implements ParamConverterManagerInterface
      */
     public function add(ParamConverterInterface $converter, ?int $priority, ?string $name): void
     {
-        if (\array_key_exists($priority, $this->converters) === false) {
-            $this->converters[$priority] = [];
-        }
+        if ($priority !== null) {
+            if (\array_key_exists($priority, $this->converters) === false) {
+                $this->converters[$priority] = [];
+            }
 
-        $this->converters[$priority][] = $converter;
+            $this->converters[$priority][] = $converter;
+        }
 
         if ($name !== null) {
             $this->namedConverters[$name] = $converter;
@@ -80,7 +82,7 @@ class ParamConverterManager implements ParamConverterManagerInterface
      * converter is applied it will move on to the next configuration and so on.
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param \Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationInterface[] $configurations
+     * @param \Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter[] $configurations
      *
      * @return void
      *
@@ -110,7 +112,7 @@ class ParamConverterManager implements ParamConverterManagerInterface
 
         // If the value is already an instance of the class we are trying to convert it into
         // we should continue as no conversion is required
-        if (\is_object($value) && $value instanceof $className) {
+        if (\is_object($value) === true && ($value instanceof $className) === true) {
             return;
         }
 
