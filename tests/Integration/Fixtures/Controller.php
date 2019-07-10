@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\LoyaltyCorp\RequestHandlers\Integration\Fixtures;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+
 class Controller
 {
     /**
@@ -21,6 +23,8 @@ class Controller
      * @param \Tests\LoyaltyCorp\RequestHandlers\Integration\Fixtures\ThingRequest $request
      *
      * @return void
+     *
+     * @ParamConverter("request")
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

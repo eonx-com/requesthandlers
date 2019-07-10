@@ -53,3 +53,15 @@ parameters:
         -
             message: '#Call to static method PHPUnit\\Framework\\Assert::assertSame\(\) with .purple. and object will always evaluate to false\.#'
             path: tests/Serializer/DoctrineDenormalizerTest.php
+        -
+            message: '#Result of && is always false\.#'
+            path: src/EventListeners/ParamConverterListener.php
+        -
+            message: '#Strict comparison using === between string and null will always evaluate to false\.#'
+            path: src/EventListeners/ParamConverterListener.php
+        -
+            message: '#Strict comparison using !== between string and null will always evaluate to true\.#'
+            path: src/Request/ParamConverterManager.php
+        -
+            message: '#Call to static method PHPUnit\\Framework\\Assert::assertNull\(\) with string will always evaluate to false\.#'
+            path: tests/EventListeners/ParamConverterListenerTest.php

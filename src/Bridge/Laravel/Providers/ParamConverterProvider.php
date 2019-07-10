@@ -11,15 +11,16 @@ use EoneoPay\Utils\AnnotationReader;
 use FOS\RestBundle\Serializer\SymfonySerializerAdapter;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
+use LoyaltyCorp\RequestHandlers\EventListeners\ParamConverterListener;
 use LoyaltyCorp\RequestHandlers\Request\DoctrineParamConverter;
+use LoyaltyCorp\RequestHandlers\Request\Interfaces\ParamConverterManagerInterface;
+use LoyaltyCorp\RequestHandlers\Request\ParamConverterManager;
 use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
 use LoyaltyCorp\RequestHandlers\Serializer\DoctrineDenormalizer;
 use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
 use LoyaltyCorp\RequestHandlers\Serializer\RequestBodySerializer;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener;
-use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter as RealDoctrineParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterManager;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -117,15 +118,13 @@ final class ParamConverterProvider extends ServiceProvider
                 );
             }
         );
-        $this->app->singleton(ParamConverterListener::class, static function (Container $app): ParamConverterListener {
-            return new ParamConverterListener($app->make(ParamConverterManager::class), false);
-        });
+        $this->app->singleton(ParamConverterListener::class);
         $this->app->singleton(
-            ParamConverterManager::class,
+            ParamConverterManagerInterface::class,
             static function (Container $app): ParamConverterManager {
                 $manager = new ParamConverterManager();
-                $manager->add($app->make(RealDoctrineParamConverter::class), 5);
-                $manager->add($app->make(RequestBodyParamConverter::class), 1);
+                $manager->add($app->make(RealDoctrineParamConverter::class), 5, null);
+                $manager->add($app->make(RequestBodyParamConverter::class), 1, null);
 
                 return $manager;
             }

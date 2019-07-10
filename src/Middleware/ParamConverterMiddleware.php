@@ -7,8 +7,8 @@ use Closure;
 use EoneoPay\Utils\Bridge\Lumen\Resolvers\ControllerResolver;
 use Illuminate\Http\Request;
 use LoyaltyCorp\RequestHandlers\Event\FilterControllerEvent;
+use LoyaltyCorp\RequestHandlers\EventListeners\ParamConverterListener;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener;
-use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
 
 final class ParamConverterMiddleware
 {
@@ -23,7 +23,7 @@ final class ParamConverterMiddleware
     private $controllerResolver;
 
     /**
-     * @var \Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener
+     * @var \LoyaltyCorp\RequestHandlers\EventListeners\ParamConverterListener
      */
     private $listener;
 
@@ -32,7 +32,7 @@ final class ParamConverterMiddleware
      *
      * @param \Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener $controllerListener
      * @param \EoneoPay\Utils\Bridge\Lumen\Resolvers\ControllerResolver $controllerResolver
-     * @param \Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener $converterListener
+     * @param \LoyaltyCorp\RequestHandlers\EventListeners\ParamConverterListener $converterListener
      */
     public function __construct(
         ControllerListener $controllerListener,
@@ -51,6 +51,9 @@ final class ParamConverterMiddleware
      * @param \Closure $next
      *
      * @return mixed
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\InvalidRequestAttributeException
+     * @throws \ReflectionException
      */
     public function handle(Request $request, Closure $next)
     {
