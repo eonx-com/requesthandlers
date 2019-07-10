@@ -200,7 +200,7 @@ XML;
      *
      * @return void
      *
-     * @throws \EoneoPay\Utils\Exceptions\AnnotationCacheException
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function testEmptyRequest(): void
     {
@@ -223,8 +223,8 @@ XML;
      *
      * @return void
      *
-     * @throws \EoneoPay\Utils\Exceptions\AnnotationCacheException
      * @throws \EoneoPay\Utils\Exceptions\InvalidDateTimeStringException
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      *
      * @dataProvider getSuccessData
      */
@@ -266,7 +266,7 @@ XML;
      *
      * @return void
      *
-     * @throws \EoneoPay\Utils\Exceptions\AnnotationCacheException
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function testValidationFailure(): void
     {

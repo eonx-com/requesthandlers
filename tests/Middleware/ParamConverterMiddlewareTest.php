@@ -6,9 +6,9 @@ namespace Tests\LoyaltyCorp\RequestHandlers\Middleware;
 use EoneoPay\Utils\Bridge\Lumen\Resolvers\ControllerResolver;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
+use LoyaltyCorp\RequestHandlers\EventListeners\ParamConverterListener;
 use LoyaltyCorp\RequestHandlers\Middleware\ParamConverterMiddleware;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener;
-use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**
