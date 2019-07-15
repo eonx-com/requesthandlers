@@ -5,6 +5,10 @@ namespace LoyaltyCorp\RequestHandlers\Encoder;
 
 use Symfony\Component\Serializer\Encoder\XmlEncoder as BaseXmlEncoder;
 
+/**
+ * This xml encoder extends base symfony encoder to add the ability to check
+ * for empty request body and add in the default empty body.
+ */
 final class XmlEncoder extends BaseXmlEncoder
 {
     /**
