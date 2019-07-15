@@ -23,6 +23,8 @@ use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**
  * @covers \LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects) Coupling required to fully test converter
  */
 class RequestBodyParamConverterTest extends TestCase
 {
