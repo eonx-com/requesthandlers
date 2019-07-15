@@ -16,7 +16,7 @@ final class XmlEncoder extends BaseXmlEncoder
      */
     public function decode($data, $format, array $context = [])
     {
-        if ($data === '' || $data === null) {
+        if ($data === '') {
             $data = '<xml></xml>';
         }
 

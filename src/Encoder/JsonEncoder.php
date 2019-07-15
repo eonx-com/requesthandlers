@@ -16,7 +16,7 @@ final class JsonEncoder extends BaseJsonEncoder
      */
     public function decode($data, $format, array $context = [])
     {
-        if ($data === '' || $data === null) {
+        if ($data === '') {
             $data = '{}';
         }
 

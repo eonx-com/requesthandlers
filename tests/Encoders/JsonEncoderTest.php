@@ -26,20 +26,4 @@ class JsonEncoderTest extends TestCase
 
         self::assertSame($expected, $result);
     }
-
-    /**
-     * Test to make sure null data gets processed by decode without fuss.
-     *
-     * @return void
-     */
-    public function testDecodeWorksWithNullData(): void
-    {
-        $encoder = new JsonEncoder();
-
-        $expected = [];
-
-        $result = $encoder->decode(null, 'json');
-
-        self::assertSame($expected, $result);
-    }
 }
