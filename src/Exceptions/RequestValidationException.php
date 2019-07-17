@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace LoyaltyCorp\RequestHandlers\Exceptions;
 
 use EoneoPay\Utils\Exceptions\BaseException;
-use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
+use LoyaltyCorp\RequestHandlers\Serializer\Converters\CamelCaseToSnakeCaseNameConverter;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Throwable;
 
