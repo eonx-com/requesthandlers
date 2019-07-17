@@ -12,55 +12,110 @@ use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 class CamelCaseToSnakeCaseNameConverterTest extends TestCase
 {
     /**
+     * Get property names data set for name converter tests.
+     *
+     * @return iterable
+     */
+    public function getPropertyNamesDataSet(): iterable
+    {
+        yield [
+            'Property name with array key 1' => [
+                'denormalized' => 'headerStuff[APPLICATION_ID].property',
+                'normalized' => 'header_stuff[APPLICATION_ID].property'
+            ]
+        ];
+        yield [
+            'Property name with array key 2' => [
+                'denormalized' => 'headerStuffStuff[APPLICATION_ID].property',
+                'normalized' => 'header_stuff_stuff[APPLICATION_ID].property'
+            ]
+        ];
+        yield [
+            'Property name with array key 3' => [
+                'denormalized' => 'headerStuff[APPLICATION_ID].propertyId',
+                'normalized' => 'header_stuff[APPLICATION_ID].property_id'
+            ]
+        ];
+        yield [
+            'Property name no array key 1' => [
+                'denormalized' => 'propertyName',
+                'normalized' => 'property_name'
+            ]
+        ];
+        yield [
+            'Property name no array key 2' => [
+                'denormalized' => 'property',
+                'normalized' => 'property'
+            ]
+        ];
+        yield [
+            'Property name no array key 3' => [
+                'denormalized' => 'property\((Name',
+                'normalized' => 'property\((_name'
+            ]
+        ];
+        yield [
+            'Property name no array key 4' => [
+                'denormalized' => 'property[NAME',
+                'normalized' => 'property[_n_a_m_e'
+            ]
+        ];
+    }
+
+    /**
      * Test de-normalizing a property name results in expected value.
+     *
+     * @param mixed[] $data
+     *
+     * @return void
+     *
+     * @dataProvider getPropertyNamesDataSet()
+     */
+    public function testDenormalize(array $data): void
+    {
+        $actualDenormalized = $this->getConverter()->denormalize($data['normalized']);
+
+        static::assertSame($data['denormalized'], $actualDenormalized);
+    }
+
+    /**
+     * Test de-normalizing a property name results in expected value when attributes are supplied to converter.
      *
      * @return void
      */
-    public function testDenormalize(): void
+    public function testDenormalizeWithProvidedAttributes(): void
     {
-        $expectedValue1 = 'headerStuff[APPLICATION_ID].property';
-        $expectedValue2 = 'headerStuffStuff[APPLICATION_ID].property';
-        $expectedValue3 = 'headerStuff[APPLICATION_ID].propertyId';
-        $expectedValue4 = 'propertyName';
-        $expectedValue5 = 'property';
+        $actualDenormalized = $this->getConverter(['random'])->denormalize('property');
 
-        $actualValue1 = $this->getConverter()->denormalize('header_stuff[APPLICATION_ID].property');
-        $actualValue2 = $this->getConverter()->denormalize('header_stuff_stuff[APPLICATION_ID].property');
-        $actualValue3 = $this->getConverter()->denormalize('header_stuff[APPLICATION_ID].property_id');
-        $actualValue4 = $this->getConverter()->denormalize('property_name');
-        $actualValue5 = $this->getConverter(['random'])->denormalize('property');
-
-        static::assertSame($expectedValue1, $actualValue1);
-        static::assertSame($expectedValue2, $actualValue2);
-        static::assertSame($expectedValue3, $actualValue3);
-        static::assertSame($expectedValue4, $actualValue4);
-        static::assertSame($expectedValue5, $actualValue5);
+        static::assertSame('property', $actualDenormalized);
     }
 
     /**
      * Test normalizing a property name results in expected value.
      *
+     * @param mixed[] $data
+     *
+     * @return void
+     *
+     * @dataProvider getPropertyNamesDataSet()
+     */
+    public function testNormalize(array $data): void
+    {
+        $actualNormalized = $this->getConverter()->normalize($data['denormalized']);
+
+        static::assertSame($data['normalized'], $actualNormalized);
+    }
+
+    /**
+     * Test normalizing a property name results in expected value when attributes are supplied to converter.
+     *
      * @return void
      */
-    public function testNormalize(): void
+    public function testNormalizeWithProvidedAttributes(): void
     {
-        $expectedValue1 = 'header_stuff[APPLICATION_ID].property';
-        $expectedValue2 = 'header_stuff_stuff[APPLICATION_ID].property';
-        $expectedValue3 = 'header_stuff[APPLICATION_ID].property_id';
-        $expectedValue4 = 'property_name';
-        $expectedValue5 = 'property';
+        $actualNormalized = $this->getConverter(['random'])->normalize('property');
 
-        $actualValue1 = $this->getConverter()->normalize('headerStuff[APPLICATION_ID].property');
-        $actualValue2 = $this->getConverter()->normalize('headerStuffStuff[APPLICATION_ID].property');
-        $actualValue3 = $this->getConverter()->normalize('headerStuff[APPLICATION_ID].propertyId');
-        $actualValue4 = $this->getConverter()->normalize('propertyName');
-        $actualValue5 = $this->getConverter(['random'])->normalize('property');
-
-        static::assertSame($expectedValue1, $actualValue1);
-        static::assertSame($expectedValue2, $actualValue2);
-        static::assertSame($expectedValue3, $actualValue3);
-        static::assertSame($expectedValue4, $actualValue4);
-        static::assertSame($expectedValue5, $actualValue5);
+        static::assertSame('property', $actualNormalized);
     }
 
     /**
