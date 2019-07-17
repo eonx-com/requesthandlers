@@ -14,7 +14,7 @@ class CamelCaseToSnakeCaseNameConverterTest extends TestCase
     /**
      * Get property names data set for name converter tests.
      *
-     * @return iterable
+     * @return mixed[][]
      */
     public function getPropertyNamesDataSet(): iterable
     {
