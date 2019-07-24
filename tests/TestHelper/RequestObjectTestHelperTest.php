@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\LoyaltyCorp\RequestHandlers\TestHelper;
 
+use LoyaltyCorp\RequestHandlers\Builder\ObjectBuilder;
 use LoyaltyCorp\RequestHandlers\TestHelper\Exceptions\ValidationFailedException;
 use LoyaltyCorp\RequestHandlers\TestHelper\RequestObjectTestHelper;
 use RuntimeException;
@@ -12,7 +13,7 @@ use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Illuminate\Contracts\Foundati
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\SerializerStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\Validator\ValidatorStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
-use Tests\LoyaltyCorp\RequestHandlers\TestHelper\Fixtures\TestRequest;
+use Tests\LoyaltyCorp\RequestHandlers\Fixtures\TestRequest;
 
 /**
  * @covers \LoyaltyCorp\RequestHandlers\TestHelper\RequestObjectTestHelper
@@ -150,6 +151,9 @@ class RequestObjectTestHelperTest extends TestCase
         $validator = new ValidatorStub($violations);
         $container->instance(ValidatorInterface::class, $validator);
 
-        return new RequestObjectTestHelper($container);
+        return new RequestObjectTestHelper(
+            new ObjectBuilder($serializer, $validator),
+            $serializer
+        );
     }
 }

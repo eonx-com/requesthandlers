@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\LoyaltyCorp\RequestHandlers\TestHelper\Fixtures;
+namespace Tests\LoyaltyCorp\RequestHandlers\Fixtures;
 
 use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Exceptions\RequestValidationExceptionStub;
 
 class TestRequest implements RequestObjectInterface
 {
@@ -40,7 +41,7 @@ class TestRequest implements RequestObjectInterface
      */
     public static function getExceptionClass(): string
     {
-        return '';
+        return RequestValidationExceptionStub::class;
     }
 
     /**

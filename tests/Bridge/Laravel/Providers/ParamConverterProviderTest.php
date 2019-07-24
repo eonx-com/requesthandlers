@@ -7,6 +7,8 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use EoneoPay\Utils\AnnotationReader;
 use LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers\ParamConverterProvider;
+use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface;
+use LoyaltyCorp\RequestHandlers\Builder\ObjectBuilder;
 use LoyaltyCorp\RequestHandlers\Request\DoctrineParamConverter;
 use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
 use LoyaltyCorp\RequestHandlers\Serializer\RequestBodySerializer;
@@ -67,6 +69,7 @@ class ParamConverterProviderTest extends TestCase
             LessThanValidator::class => LessThanValidator::class,
             NotEqualToValidator::class => NotEqualToValidator::class,
             NotIdenticalToValidator::class => NotIdenticalToValidator::class,
+            ObjectBuilderInterface::class => ObjectBuilder::class,
             PropertyAccessorInterface::class => PropertyAccessor::class,
             RequestBodyParamConverter::class => RequestBodyParamConverter::class,
             ParamConverterListener::class => ParamConverterListener::class,

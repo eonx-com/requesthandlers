@@ -1,0 +1,32 @@
+<?php
+declare(strict_types=1);
+
+namespace LoyaltyCorp\RequestHandlers\Builder\Interfaces;
+
+use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
+
+interface ObjectBuilderInterface
+{
+    /**
+     * Builds a valid Request Object given the supplied json and optional additional
+     * context.
+     *
+     * @param string $objectClass
+     * @param string $json
+     * @param mixed[]|null $context
+     *
+     * @return \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface
+     */
+    public function build(string $objectClass, string $json, ?array $context = null): RequestObjectInterface;
+
+    /**
+     * Ensures that a Request Object is validated.
+     *
+     * @param \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface $object
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException
+     */
+    public function ensureValidated(RequestObjectInterface $object): void;
+}
