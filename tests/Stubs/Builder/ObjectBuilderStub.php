@@ -47,6 +47,14 @@ class ObjectBuilderStub implements ObjectBuilderInterface
     /**
      * {@inheritdoc}
      */
+    public function buildWithContext(string $objectClass, array $context): RequestObjectInterface
+    {
+        return $this->build($objectClass, '{}', $context);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function ensureValidated(RequestObjectInterface $object): void
     {
         $next = \array_shift($this->validated);
