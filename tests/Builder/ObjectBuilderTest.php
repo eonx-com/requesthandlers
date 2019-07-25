@@ -44,6 +44,28 @@ class ObjectBuilderTest extends TestCase
     }
 
     /**
+     * Tests the buildWithContext happy path.
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\UnsupportedClassException
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\MisconfiguredSerializerException
+     */
+    public function testBuildWithContext(): void
+    {
+        $expected = new TestRequest();
+
+        $serializer = new SerializerStub($expected);
+        $validator = new ValidatorStub();
+        $builder = $this->getBuilder($serializer, $validator);
+
+        $result = $builder->buildWithContext(TestRequest::class, []);
+
+        static::assertSame($expected, $result);
+    }
+
+    /**
      * Tests the build happy path.
      *
      * @return void

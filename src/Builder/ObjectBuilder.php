@@ -89,6 +89,18 @@ final class ObjectBuilder implements ObjectBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\MisconfiguredSerializerException
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\UnsupportedClassException
+     */
+    public function buildWithContext(string $objectClass, array $context): RequestObjectInterface
+    {
+        return $this->build($objectClass, '{}', $context);
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function ensureValidated(RequestObjectInterface $instance): void
     {
