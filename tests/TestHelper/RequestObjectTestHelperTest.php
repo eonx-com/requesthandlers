@@ -9,11 +9,11 @@ use LoyaltyCorp\RequestHandlers\TestHelper\RequestObjectTestHelper;
 use RuntimeException;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Tests\LoyaltyCorp\RequestHandlers\Fixtures\TestRequest;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Illuminate\Contracts\Foundation\ApplicationStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\SerializerStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\Validator\ValidatorStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
-use Tests\LoyaltyCorp\RequestHandlers\Fixtures\TestRequest;
 
 /**
  * @covers \LoyaltyCorp\RequestHandlers\TestHelper\RequestObjectTestHelper

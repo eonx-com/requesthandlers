@@ -54,6 +54,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects) Coupling required to bind services
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength) register method contains lots of lines
  */
 final class ParamConverterProvider extends ServiceProvider
 {
