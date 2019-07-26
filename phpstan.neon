@@ -65,3 +65,6 @@ parameters:
         -
             message: '#Call to static method PHPUnit\\Framework\\Assert::assertNull\(\) with string will always evaluate to false\.#'
             path: tests/EventListeners/ParamConverterListenerTest.php
+        -
+            message: '#Tests\\LoyaltyCorp\\RequestHandlers\\Stubs\\Vendor\\PhpStan\\ScopeStub::__construct\(\) does not call parent constructor from PHPStan\\Analyser\\Scope\.#'
+            path: tests/Stubs/Vendor/PhpStan/ScopeStub.php

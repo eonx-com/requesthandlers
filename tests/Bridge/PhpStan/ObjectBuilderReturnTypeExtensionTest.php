@@ -10,7 +10,6 @@ use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name\FullyQualified;
-use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\Dummy\DummyMethodReflection;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
@@ -19,6 +18,11 @@ use PHPStan\Type\ObjectType;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\PhpStan\ScopeStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
+/**
+ * @covers \LoyaltyCorp\RequestHandlers\Bridge\PhpStan\ObjectBuilderReturnTypeExtension
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects) required to test
+ */
 class ObjectBuilderReturnTypeExtensionTest extends TestCase
 {
     /**
