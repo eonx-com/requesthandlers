@@ -11,6 +11,8 @@ use EoneoPay\Utils\AnnotationReader;
 use FOS\RestBundle\Serializer\SymfonySerializerAdapter;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
+use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface;
+use LoyaltyCorp\RequestHandlers\Builder\ObjectBuilder;
 use LoyaltyCorp\RequestHandlers\Encoder\JsonEncoder;
 use LoyaltyCorp\RequestHandlers\Encoder\XmlEncoder;
 use LoyaltyCorp\RequestHandlers\EventListeners\ParamConverterListener;
@@ -52,6 +54,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects) Coupling required to bind services
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength) register method contains lots of lines
  */
 final class ParamConverterProvider extends ServiceProvider
 {
@@ -103,6 +106,12 @@ final class ParamConverterProvider extends ServiceProvider
                 ));
             }
         );
+        $this->app->singleton(ObjectBuilderInterface::class, static function (Container $app): ObjectBuilder {
+            return new ObjectBuilder(
+                $app->make('requesthandlers_serializer'),
+                $app->make(ValidatorInterface::class)
+            );
+        });
         $this->app->singleton(PropertyAccessorInterface::class, static function (): PropertyAccessor {
             return new PropertyAccessor(true);
         });
