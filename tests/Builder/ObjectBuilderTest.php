@@ -22,7 +22,7 @@ use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 class ObjectBuilderTest extends TestCase
 {
     /**
-     * Tests the build happy path.
+     * Tests that build returns the object the serializer returned.
      *
      * @return void
      *
@@ -44,7 +44,7 @@ class ObjectBuilderTest extends TestCase
     }
 
     /**
-     * Tests the buildWithContext happy path.
+     * Tests the buildWithContext returns the expected.
      *
      * @return void
      *
@@ -175,6 +175,7 @@ class ObjectBuilderTest extends TestCase
         $request = new TestRequest();
 
         $validator = new ValidatorStub([[
+            // Violations in PreValidate
             new ConstraintViolation(
                 'Message',
                 'Message',
@@ -209,45 +210,4 @@ class ObjectBuilderTest extends TestCase
             $validator ?? new ValidatorStub()
         );
     }
-
-//    /**
-//     * Tests PreValidate runs before primary validate
-//     *
-//     * @return void
-//     */
-//    public function testHandleViolationInPreValidate(): void
-//    {
-//        $violation1 = new ConstraintViolation('PreValidate', null, [], null, null, null);
-//        $violation2 = new ConstraintViolation('StandardValidation', null, [], null, null, null);
-//        $validator = new ValidatorStub([
-//            // PreValidate violation
-//            [$violation1],
-//            // Violation in normal validation
-//            [$violation2]
-//        ]);
-//
-//        $middleware = new ValidatingMiddleware($validator);
-//
-//        $request = new Request();
-//        $request->setRouteResolver(static function () {
-//            return [null, null, [
-//                'object' => new RequestObjectStub()
-//            ]];
-//        });
-//
-//        $next = static function () {
-//            return 'hello';
-//        };
-//
-//        try {
-//            $middleware->handle($request, $next);
-//        } catch (RequestValidationException $exception) {
-//            static::assertContains($violation1, $exception->getViolations());
-//            static::assertNotContains($violation2, $exception->getViolations());
-//
-//            return;
-//        }
-//
-//        static::fail('Exception was not thrown');
-//    }
 }
