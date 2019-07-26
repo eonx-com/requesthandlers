@@ -5,24 +5,24 @@ namespace LoyaltyCorp\RequestHandlers\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface;
 use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ValidatingMiddleware
 {
     /**
-     * @var \Symfony\Component\Validator\Validator\ValidatorInterface
+     * @var \LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface
      */
-    private $validator;
+    private $objectBuilder;
 
     /**
      * Constructor
      *
-     * @param \Symfony\Component\Validator\Validator\ValidatorInterface $validator
+     * @param \LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface $objectBuilder
      */
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(ObjectBuilderInterface $objectBuilder)
     {
-        $this->validator = $validator;
+        $this->objectBuilder = $objectBuilder;
     }
 
     /**
@@ -53,37 +53,9 @@ final class ValidatingMiddleware
              * @var \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface $parameter
              */
 
-            $this->validateWithGroups(['PreValidate'], $parameter);
-
-            $groups = $parameter->resolveValidationGroups();
-            $groups[] = 'Default';
-
-            $this->validateWithGroups($groups, $parameter);
+            $this->objectBuilder->ensureValidated($parameter);
         }
 
         return $next($request);
-    }
-
-    /**
-     * Validates the request object with the specified groups.
-     *
-     * @param string[] $groups
-     * @param \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface $requestObject
-     *
-     * @return void
-     *
-     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException
-     */
-    private function validateWithGroups(array $groups, RequestObjectInterface $requestObject): void
-    {
-        $violations = $this->validator->validate($requestObject, null, $groups);
-
-        if ($violations->count() === 0) {
-            return;
-        }
-
-        $exceptionClass = $requestObject::getExceptionClass();
-
-        throw new $exceptionClass($violations);
     }
 }

@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace LoyaltyCorp\RequestHandlers\TestHelper;
 
-use Illuminate\Contracts\Container\Container;
+use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface;
+use LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException;
 use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
 use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
 use LoyaltyCorp\RequestHandlers\TestHelper\Exceptions\ValidationFailedException;
-use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * This test helper exists to have a single place where logic used by test cases
@@ -24,18 +24,27 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class RequestObjectTestHelper
 {
     /**
-     * @var \Illuminate\Contracts\Container\Container
+     * @var \LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface
      */
-    private $app;
+    private $objectBuilder;
+
+    /**
+     * @var \Symfony\Component\Serializer\SerializerInterface
+     */
+    private $serializer;
 
     /**
      * Constructor
      *
-     * @param \Illuminate\Contracts\Container\Container $app
+     * @param \LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface $objectBuilder
+     * @param \Symfony\Component\Serializer\SerializerInterface $serializer
      */
-    public function __construct(Container $app)
-    {
-        $this->app = $app;
+    public function __construct(
+        ObjectBuilderInterface $objectBuilder,
+        SerializerInterface $serializer
+    ) {
+        $this->objectBuilder = $objectBuilder;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -76,11 +85,8 @@ final class RequestObjectTestHelper
         string $json,
         ?array $context = null
     ): RequestObjectInterface {
-        /** @var \Symfony\Component\Serializer\SerializerInterface $serializer */
-        $serializer = $this->app->get('requesthandlers_serializer');
-
         /** @var \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface $instance */
-        $instance = $serializer->deserialize(
+        $instance = $this->serializer->deserialize(
             $json,
             $class,
             'json',
@@ -110,14 +116,17 @@ final class RequestObjectTestHelper
         string $json,
         ?array $context = null
     ): RequestObjectInterface {
-        $instance = $this->buildUnvalidatedRequest($class, $json, $context);
-        $violations = $this->validateRequest($instance);
-
-        if ($violations->count() > 0) {
-            throw new ValidationFailedException($violations);
+        try {
+            return $this->objectBuilder->build($class, $json, $context);
+        } catch (RequestValidationException $exception) {
+            throw new ValidationFailedException(
+                $exception->getViolations(),
+                'Got validation failures when trying to build a validated request.',
+                null,
+                null,
+                $exception
+            );
         }
-
-        return $instance;
     }
 
     /**
@@ -155,35 +164,5 @@ final class RequestObjectTestHelper
         }
 
         return $actual;
-    }
-
-    /**
-     * Validates a Dto
-     *
-     * @param \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface $instance
-     *
-     * @return \Symfony\Component\Validator\ConstraintViolationList
-     */
-    private function validateRequest(RequestObjectInterface $instance): ConstraintViolationList
-    {
-        /** @var \Symfony\Component\Validator\Validator\ValidatorInterface $validator */
-        $validator = $this->app->get(ValidatorInterface::class);
-
-        // Pre-validate the object to match how the ValidatingMiddleware does it.
-
-        /** @var \Symfony\Component\Validator\ConstraintViolationList $violations */
-        $violations = $validator->validate($instance, null, ['PreValidate']);
-        if ($violations->count()) {
-            return $violations;
-        }
-
-        // Validate with default and resolved validation groups.
-        $groups = $instance->resolveValidationGroups();
-        $groups[] = 'Default';
-
-        /** @var \Symfony\Component\Validator\ConstraintViolationList $violations */
-        $violations = $validator->validate($instance, null, $groups);
-
-        return $violations;
     }
 }

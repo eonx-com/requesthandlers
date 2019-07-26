@@ -1,0 +1,5 @@
+services:
+    -
+        class: LoyaltyCorp\RequestHandlers\Bridge\PhpStan\ObjectBuilderReturnTypeExtension
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension

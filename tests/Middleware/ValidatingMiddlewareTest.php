@@ -6,9 +6,8 @@ namespace Tests\LoyaltyCorp\RequestHandlers\Middleware;
 use Illuminate\Http\Request;
 use LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException;
 use LoyaltyCorp\RequestHandlers\Middleware\ValidatingMiddleware;
-use Symfony\Component\Validator\ConstraintViolation;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Builder\ObjectBuilderStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\RequestObjectStub;
-use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\Validator\ValidatorStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**
@@ -23,15 +22,8 @@ class ValidatingMiddlewareTest extends TestCase
      */
     public function testHandleLotsOfViolations(): void
     {
-        $violation = new ConstraintViolation('message', null, [], null, null, null);
-        $validator = new ValidatorStub([
-            // No violations in PreValidate
-            [],
-            // Violation in normal validation
-            [$violation]
-        ]);
-
-        $middleware = new ValidatingMiddleware($validator);
+        $objectBuilder = new ObjectBuilderStub(null, [false]);
+        $middleware = new ValidatingMiddleware($objectBuilder);
 
         $request = new Request();
         $request->setRouteResolver(static function () {
@@ -47,8 +39,9 @@ class ValidatingMiddlewareTest extends TestCase
 
         try {
             $middleware->handle($request, $next);
-        } catch (RequestValidationException $exception) {
-            static::assertContains($violation, $exception->getViolations());
+        } /** @noinspection BadExceptionsProcessingInspection */ catch (RequestValidationException $exception) {
+            // The exception was thrown
+            $this->addToAssertionCount(1);
 
             return;
         }
@@ -65,9 +58,8 @@ class ValidatingMiddlewareTest extends TestCase
      */
     public function testHandleNoParams(): void
     {
-        $validator = new ValidatorStub();
-
-        $middleware = new ValidatingMiddleware($validator);
+        $objectBuilder = new ObjectBuilderStub();
+        $middleware = new ValidatingMiddleware($objectBuilder);
 
         $request = new Request();
         $request->setRouteResolver(static function () {
@@ -92,9 +84,8 @@ class ValidatingMiddlewareTest extends TestCase
      */
     public function testHandleMissingParams(): void
     {
-        $validator = new ValidatorStub();
-
-        $middleware = new ValidatingMiddleware($validator);
+        $objectBuilder = new ObjectBuilderStub();
+        $middleware = new ValidatingMiddleware($objectBuilder);
 
         $request = new Request();
         $request->setRouteResolver(static function () {
@@ -119,9 +110,8 @@ class ValidatingMiddlewareTest extends TestCase
      */
     public function testHandleNoRoute(): void
     {
-        $validator = new ValidatorStub();
-
-        $middleware = new ValidatingMiddleware($validator);
+        $objectBuilder = new ObjectBuilderStub();
+        $middleware = new ValidatingMiddleware($objectBuilder);
 
         $request = new Request();
         $next = static function () {
@@ -142,9 +132,8 @@ class ValidatingMiddlewareTest extends TestCase
      */
     public function testHandleNoViolations(): void
     {
-        $validator = new ValidatorStub();
-
-        $middleware = new ValidatingMiddleware($validator);
+        $objectBuilder = new ObjectBuilderStub(null, [true]);
+        $middleware = new ValidatingMiddleware($objectBuilder);
 
         $request = new Request();
         $request->setRouteResolver(static function () {
@@ -161,46 +150,5 @@ class ValidatingMiddlewareTest extends TestCase
         $result = $middleware->handle($request, $next);
 
         self::assertSame('hello', $result);
-    }
-
-    /**
-     * Tests PreValidate runs before primary validate
-     *
-     * @return void
-     */
-    public function testHandleViolationInPreValidate(): void
-    {
-        $violation1 = new ConstraintViolation('PreValidate', null, [], null, null, null);
-        $violation2 = new ConstraintViolation('StandardValidation', null, [], null, null, null);
-        $validator = new ValidatorStub([
-            // PreValidate violation
-            [$violation1],
-            // Violation in normal validation
-            [$violation2]
-        ]);
-
-        $middleware = new ValidatingMiddleware($validator);
-
-        $request = new Request();
-        $request->setRouteResolver(static function () {
-            return [null, null, [
-                'object' => new RequestObjectStub()
-            ]];
-        });
-
-        $next = static function () {
-            return 'hello';
-        };
-
-        try {
-            $middleware->handle($request, $next);
-        } catch (RequestValidationException $exception) {
-            static::assertContains($violation1, $exception->getViolations());
-            static::assertNotContains($violation2, $exception->getViolations());
-
-            return;
-        }
-
-        static::fail('Exception was not thrown');
     }
 }
