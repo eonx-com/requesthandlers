@@ -73,24 +73,6 @@ class DoctrineDenormalizerTest extends TestCase
     }
 
     /**
-     * Tests denormalize scalar
-     *
-     * @return void
-     *
-     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
-     */
-    public function testDenormalizeScalar(): void
-    {
-        $registry = $this->createMock(ManagerRegistry::class);
-        $denormalizer = new DoctrineDenormalizer($registry);
-
-        $result = $denormalizer->denormalize('purple', 'EntityClass');
-
-        self::assertSame('purple', $result);
-    }
-
-    /**
      * Tests denormalize
      *
      * @return void
@@ -107,6 +89,24 @@ class DoctrineDenormalizerTest extends TestCase
         $denormalizer = new DoctrineDenormalizer($registry);
         $result = $denormalizer->denormalize($entity, 'stdClass');
         self::assertSame($entity, $result);
+    }
+
+    /**
+     * Tests denormalize scalar
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizeScalar(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+        $denormalizer = new DoctrineDenormalizer($registry);
+
+        $result = $denormalizer->denormalize('purple', 'EntityClass');
+
+        self::assertSame('purple', $result);
     }
 
     /**
@@ -206,5 +206,23 @@ class DoctrineDenormalizerTest extends TestCase
 
         self::assertTrue($denormalizer->supportsDenormalization([], 'EntityClass', null));
         self::assertFalse($denormalizer->supportsDenormalization([], 'NotEntityClass', null));
+    }
+
+    /**
+     * Test that supports ignores the classes that have been set as to be ignored on the setup.
+     *
+     * @return void
+     */
+    public function testSupportsSkipsTheIgnoredClasses(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+
+        $denormalizer = new DoctrineDenormalizer($registry, null, ['CustomerClass']);
+
+        $supports = $denormalizer->supportsDenormalization([
+            'email' => 'example@example.com'
+        ], 'CustomerClass', null);
+
+        self::assertFalse($supports);
     }
 }

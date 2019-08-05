@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
+// Until Doctrine Annotations v2.0, we need to register an autoloader, which is just 'class_exists'.
+AnnotationRegistry::registerUniqueLoader('class_exists');
+
 if (\function_exists('xdebug_set_filter') === false) {
     return;
 }
@@ -20,6 +23,3 @@ if (\function_exists('xdebug_set_filter') === false) {
 );
 
 require_once __DIR__.'/../vendor/autoload.php';
-
-// Until Doctrine Annotations v2.0, we need to register an autoloader, which is just 'class_exists'.
-AnnotationRegistry::registerUniqueLoader('class_exists');
