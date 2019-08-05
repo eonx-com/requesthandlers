@@ -23,7 +23,7 @@ final class DoctrineDenormalizer implements DenormalizerInterface
     /**
      * List of classes this normalizer does not handle.
      *
-     * @var mixed[]|null
+     * @var mixed[]
      */
     private $ignoreClasses;
 
@@ -46,7 +46,7 @@ final class DoctrineDenormalizer implements DenormalizerInterface
     ) {
         $this->managerRegistry = $managerRegistry;
         $this->classKeyMap = $classKeyMap;
-        $this->ignoreClasses = $ignoreClasses;
+        $this->ignoreClasses = $ignoreClasses ?? [];
     }
 
     /**
@@ -97,8 +97,8 @@ final class DoctrineDenormalizer implements DenormalizerInterface
      */
     public function supportsDenormalization($data, $type, $format = null): bool
     {
-        if (\is_array($this->ignoreClasses) && \in_array($type, $this->ignoreClasses, true) === true) {
-            // Ignoring this class a part of setup the denormalizer has.
+        if (\in_array($type, $this->ignoreClasses, true) === true) {
+            // Ignoring this class as part of setup denormalizer has.
             return false;
         }
 
