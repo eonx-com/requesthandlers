@@ -21,6 +21,13 @@ final class DoctrineDenormalizer implements DenormalizerInterface
     private $classKeyMap;
 
     /**
+     * List of classes this normalizer does not handle.
+     *
+     * @var mixed[]
+     */
+    private $ignoreClasses;
+
+    /**
      * @var \Doctrine\Common\Persistence\ManagerRegistry
      */
     private $managerRegistry;
@@ -30,11 +37,16 @@ final class DoctrineDenormalizer implements DenormalizerInterface
      *
      * @param \Doctrine\Common\Persistence\ManagerRegistry $managerRegistry
      * @param mixed[]|null $classKeyMap
+     * @param mixed[]|null $ignoreClasses
      */
-    public function __construct(ManagerRegistry $managerRegistry, ?array $classKeyMap = null)
-    {
+    public function __construct(
+        ManagerRegistry $managerRegistry,
+        ?array $classKeyMap = null,
+        ?array $ignoreClasses = null
+    ) {
         $this->managerRegistry = $managerRegistry;
         $this->classKeyMap = $classKeyMap;
+        $this->ignoreClasses = $ignoreClasses ?? [];
     }
 
     /**
@@ -85,6 +97,11 @@ final class DoctrineDenormalizer implements DenormalizerInterface
      */
     public function supportsDenormalization($data, $type, $format = null): bool
     {
+        if (\in_array($type, $this->ignoreClasses, true) === true) {
+            // Ignoring this class as part of setup denormalizer has.
+            return false;
+        }
+
         $manager = $this->managerRegistry->getManagerForClass($type);
 
         if ($manager === null) {
