@@ -136,7 +136,7 @@ final class DoctrineDenormalizer implements DenormalizerInterface
      *
      * @param string $class Class name
      *
-     * @return mixed[]
+     * @return string[] Array where key is the Entity ID field, value is the key in the JSON request.
      *
      * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
      */
