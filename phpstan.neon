@@ -27,9 +27,6 @@ parameters:
             message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return object but returns null\.#'
             path: src/Serializer/DoctrineDenormalizer.php
         -
-            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return object but returns object\|string\.#'
-            path: src/Serializer/DoctrineDenormalizer.php
-        -
             message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return object but returns object\|null\.#'
             path: src/Serializer/DoctrineDenormalizer.php
         -
@@ -55,6 +52,9 @@ parameters:
             path: tests/Integration/RequestIntegrationTest.php
         -
             message: '#Call to static method PHPUnit\\Framework\\Assert::assertSame\(\) with .purple. and object will always evaluate to false\.#'
+            path: tests/Serializer/DoctrineDenormalizerTest.php
+        -
+            message: '#Call to static method PHPUnit\\Framework\\Assert::assertSame\(\) with .somevalue. and object will always evaluate to false\.#'
             path: tests/Serializer/DoctrineDenormalizerTest.php
         -
             message: '#Result of && is always false\.#'
