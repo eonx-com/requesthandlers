@@ -67,15 +67,14 @@ class DoctrineDenormalizerTest extends TestCase
         $entity = new stdClass();
 
         $repository = $this->createMock(ObjectRepository::class);
-        $repository->expects(self::exactly(2))
+        $repository->expects(self::once())
             ->method('findOneBy')
             ->willReturnMap([
-                [['externalId' => 'entityId'], $entity],
-                [['externalId' => 'noSuchId'], null]
+                [['externalId' => 'entityId'], $entity]
             ]);
 
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects(self::exactly(2))
+        $registry->expects(self::once())
             ->method('getRepository')
             ->with('EntityClass')
             ->willReturn($repository);
@@ -83,9 +82,36 @@ class DoctrineDenormalizerTest extends TestCase
         $denormalizer = new DoctrineDenormalizer($registry);
         $result = $denormalizer->denormalize('entityId', 'EntityClass');
         self::assertSame($entity, $result);
+    }
 
-        $result = $denormalizer->denormalize('noSuchId', 'EntityClass');
-        self::assertSame('noSuchId', $result);
+    /**
+     * Tests denormalize strings as ID fields will uses the first custom field if defined.
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizeStringsWithCustomId(): void
+    {
+        $entity = new stdClass();
+
+        $repository = $this->createMock(ObjectRepository::class);
+        $repository->expects(self::once())
+            ->method('findOneBy')
+            ->willReturnMap([
+                [['customId' => 'entityIdValue'], $entity]
+            ]);
+
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry->expects(self::once())
+            ->method('getRepository')
+            ->with('EntityClass')
+            ->willReturn($repository);
+
+        $denormalizer = new DoctrineDenormalizer($registry, ['EntityClass' => ['customId' => 'xxx', 'yyy' => 'zzz']]);
+        $result = $denormalizer->denormalize('entityIdValue', 'EntityClass');
+        self::assertSame($entity, $result);
     }
 
     /**
