@@ -27,6 +27,9 @@ parameters:
             message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return object but returns null\.#'
             path: src/Serializer/DoctrineDenormalizer.php
         -
+            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return object but returns object\|string\.#'
+            path: src/Serializer/DoctrineDenormalizer.php
+        -
             message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return object but returns object\|null\.#'
             path: src/Serializer/DoctrineDenormalizer.php
         -
