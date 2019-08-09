@@ -114,9 +114,13 @@ class DoctrineDenormalizerTest extends TestCase
             ->with('EntityClass')
             ->willReturn($repository);
 
-        $denormalizer = new DoctrineDenormalizer($registry, ['EntityClass' => ['customId' => 'xxx', 'yyy' => 'zzz']]);
+        $denormalizer = new DoctrineDenormalizer($registry, ['EntityClass' => ['customId' => 'xxx']]);
         $result = $denormalizer->denormalize('entityIdValue', 'EntityClass');
         self::assertSame($entity, $result);
+
+        $denormalizer = new DoctrineDenormalizer($registry, ['EntityClass' => ['abc' => 'xxx', 'yyy' => 'zzz']]);
+        $result = $denormalizer->denormalize('somevalue', 'EntityClass');
+        self::assertSame('somevalue', $result);
     }
 
     /**

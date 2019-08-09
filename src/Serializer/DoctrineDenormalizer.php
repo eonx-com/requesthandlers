@@ -63,7 +63,7 @@ final class DoctrineDenormalizer implements DenormalizerInterface
 
             return $data;
         }
-        if (\is_string($data) === true) {
+        if (\is_string($data) || \is_int($data) === true) {
             $key = \array_key_first($this->getClassLookupKey($class));
             $result = $this->findOneBy($class, [$key => $data]);
             return $result ?? $data;
