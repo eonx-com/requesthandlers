@@ -56,23 +56,9 @@ final class DoctrineDenormalizer implements DenormalizerInterface
      */
     public function denormalize($data, $class, $format = null, ?array $context = null)
     {
-        if ($data instanceof $class === true) {
-            // In some circumstances we're going to end up with $data being an object
-            // already, especially when we're using ->denormalize() specifically instead
-            // of deserialize
-
-            return $data;
-        }
-        if (\is_string($data) || \is_int($data) === true) {
-            $key = \array_key_first($this->getClassLookupKey($class));
-            $result = $this->findOneBy($class, [$key => $data]);
-            return $result ?? $data;
-        }
-        if ($data === null || \is_array($data) === false) {
-            // If the data is null or we didnt get an array, just return the data
-            // so that the object can be validated with the user supplied data.
-
-            return $data;
+        // If the data isn't an array, hand off to see if we can still discover the entity from it.
+        if (\is_array($data) === false) {
+            return $this->denormalizeNonArray($data, $class);
         }
 
         // entity criteria
@@ -113,6 +99,32 @@ final class DoctrineDenormalizer implements DenormalizerInterface
         }
 
         return $manager->getMetadataFactory()->isTransient($type) === false;
+    }
+
+    /**
+     * Attempts to denormalize a string or integer into an Entity
+     *
+     * @param mixed  $data    Data to restore
+     * @param string $class   The expected class to instantiate
+     *
+     * @return mixed
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+     */
+    private function denormalizeNonArray($data, string $class)
+    {
+        if (\is_string($data) !== true && \is_int($data) !== true) {
+            return $data;
+        }
+        $keys = $this->getClassLookupKey($class);
+        // If there's more than a single key, and the defined default, we've got a composite key, which we can't
+        // handle with a single scalar value.
+        if (\count($keys) > 2) {
+            return $data;
+        }
+        $key = \array_key_first($keys);
+        $result = $this->findOneBy($class, [$key => $data]);
+        return $result ?? $data;
     }
 
     /**
