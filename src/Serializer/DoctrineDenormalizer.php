@@ -64,7 +64,8 @@ final class DoctrineDenormalizer implements DenormalizerInterface
             return $data;
         }
         if (\is_string($data) === true) {
-            $result = $this->findOneBy($class, ['externalId' => $data]);
+            $key = \array_key_first($this->getClassLookupKey($class));
+            $result = $this->findOneBy($class, [$key => $data]);
             if ($result !== null) {
                 return $result;
             }
@@ -156,6 +157,6 @@ final class DoctrineDenormalizer implements DenormalizerInterface
             throw new DoctrineDenormalizerMappingException('Mis-configured class-key mappings in denormalizer.');
         }
 
-        return \array_merge($default, $keyMap);
+        return \array_merge($keyMap, $default);
     }
 }
