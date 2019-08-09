@@ -63,7 +63,12 @@ final class DoctrineDenormalizer implements DenormalizerInterface
 
             return $data;
         }
-
+        if (\is_string($data) === true) {
+            $result = $this->findOneBy($class, ['externalId' => $data]);
+            if ($result !== null) {
+                return $result;
+            }
+        }
         if ($data === null || \is_array($data) === false) {
             // If the data is null or we didnt get an array, just return the data
             // so that the object can be validated with the user supplied data.
