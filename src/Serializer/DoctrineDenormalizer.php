@@ -66,9 +66,7 @@ final class DoctrineDenormalizer implements DenormalizerInterface
         if (\is_string($data) === true) {
             $key = \array_key_first($this->getClassLookupKey($class));
             $result = $this->findOneBy($class, [$key => $data]);
-            if ($result !== null) {
-                return $result;
-            }
+            return $result ?? $data;
         }
         if ($data === null || \is_array($data) === false) {
             // If the data is null or we didnt get an array, just return the data
