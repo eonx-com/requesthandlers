@@ -54,6 +54,9 @@ parameters:
             message: '#Call to static method PHPUnit\\Framework\\Assert::assertSame\(\) with .purple. and object will always evaluate to false\.#'
             path: tests/Serializer/DoctrineDenormalizerTest.php
         -
+            message: '#Call to static method PHPUnit\\Framework\\Assert::assertSame\(\) with .somevalue. and object will always evaluate to false\.#'
+            path: tests/Serializer/DoctrineDenormalizerTest.php
+        -
             message: '#Result of && is always false\.#'
             path: src/EventListeners/ParamConverterListener.php
         -
