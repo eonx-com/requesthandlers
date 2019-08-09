@@ -62,25 +62,30 @@ class DoctrineDenormalizerTest extends TestCase
      * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
-    public function testDenormalizeStrings(): void
+    public function testDenormalizeScalarMatchingId(): void
     {
         $entity = new stdClass();
 
         $repository = $this->createMock(ObjectRepository::class);
-        $repository->expects(self::once())
+        $repository->expects(self::exactly(2))
             ->method('findOneBy')
             ->willReturnMap([
-                [['externalId' => 'entityId'], $entity]
+                [['externalId' => 'entityId'], $entity],
+                [['externalId' => 789], $entity]
             ]);
 
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects(self::once())
+        $registry->expects(self::exactly(2))
             ->method('getRepository')
             ->with('EntityClass')
             ->willReturn($repository);
 
         $denormalizer = new DoctrineDenormalizer($registry);
         $result = $denormalizer->denormalize('entityId', 'EntityClass');
+        self::assertSame($entity, $result);
+
+        $denormalizer = new DoctrineDenormalizer($registry);
+        $result = $denormalizer->denormalize(789, 'EntityClass');
         self::assertSame($entity, $result);
     }
 
@@ -152,14 +157,14 @@ class DoctrineDenormalizerTest extends TestCase
     }
 
     /**
-     * Tests denormalize scalar
+     * Tests denormalize scalar that doesn't match anything.
      *
      * @return void
      *
      * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
-    public function testDenormalizeScalar(): void
+    public function testDenormalizeScalarNonMatch(): void
     {
         $repository = $this->createMock(ObjectRepository::class);
         $registry = $this->createMock(ManagerRegistry::class);
