@@ -55,6 +55,40 @@ class DoctrineDenormalizerTest extends TestCase
     }
 
     /**
+     * Tests denormalize strings as ID fields.
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizeStrings(): void
+    {
+        $entity = new stdClass();
+
+        $repository = $this->createMock(ObjectRepository::class);
+        $repository->expects(self::exactly(2))
+            ->method('findOneBy')
+            ->willReturnMap([
+                [['externalId' => 'entityId'], $entity],
+                [['externalId' => 'noSuchId'], null]
+            ]);
+
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry->expects(self::exactly(2))
+            ->method('getRepository')
+            ->with('EntityClass')
+            ->willReturn($repository);
+
+        $denormalizer = new DoctrineDenormalizer($registry);
+        $result = $denormalizer->denormalize('entityId', 'EntityClass');
+        self::assertSame($entity, $result);
+
+        $result = $denormalizer->denormalize('noSuchId', 'EntityClass');
+        self::assertSame('noSuchId', $result);
+    }
+
+    /**
      * Tests denormalize null
      *
      * @return void
@@ -101,7 +135,12 @@ class DoctrineDenormalizerTest extends TestCase
      */
     public function testDenormalizeScalar(): void
     {
+        $repository = $this->createMock(ObjectRepository::class);
         $registry = $this->createMock(ManagerRegistry::class);
+        $registry->expects(self::exactly(1))
+            ->method('getRepository')
+            ->with('EntityClass')
+            ->willReturn($repository);
         $denormalizer = new DoctrineDenormalizer($registry);
 
         $result = $denormalizer->denormalize('purple', 'EntityClass');
