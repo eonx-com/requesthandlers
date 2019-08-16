@@ -3,3 +3,7 @@ services:
         class: LoyaltyCorp\RequestHandlers\Bridge\PhpStan\ObjectBuilderReturnTypeExtension
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
+    -
+        class: LoyaltyCorp\RequestHandlers\Bridge\PhpStan\RequestObjectTestHelperReturnTypeExtension
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
