@@ -24,8 +24,6 @@ class RequestObjectTestHelperTest extends TestCase
      * Tests buildFailedRequest
      *
      * @return void
-     *
-     * @throws \LoyaltyCorp\RequestHandlers\TestHelper\Exceptions\ValidationFailedException
      */
     public function testBuildFailedRequest(): void
     {
@@ -67,8 +65,9 @@ class RequestObjectTestHelperTest extends TestCase
      */
     public function testGetRequestProperties(): void
     {
-        $object = new TestRequest('test');
+        $object = new TestRequest(true, 'test');
         $expected = [
+            'oneTime' => true,
             'property' => 'test'
         ];
 

@@ -17,13 +17,32 @@ class TestRequest implements RequestObjectInterface
     private $property;
 
     /**
+     * @Assert\Type("bool")
+     *
+     * @var bool|null
+     */
+    private $oneTime;
+
+    /**
      * Constructor
      *
+     * @param bool|null $oneTime
      * @param mixed $property
      */
-    public function __construct($property = null)
+    public function __construct(?bool $oneTime = null, $property = null)
     {
+        $this->oneTime = $oneTime;
         $this->property = $property;
+    }
+
+    /**
+     * Returns the bool value of this method
+     *
+     * @return bool|null
+     */
+    public function isOneTime(): ?bool
+    {
+        return $this->oneTime;
     }
 
     /**

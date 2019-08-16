@@ -144,14 +144,19 @@ final class RequestObjectTestHelper
         $methodsToCheck = \array_filter(
             \array_diff($instanceMethods, $interfaceMethods),
             static function (string $method): bool {
-                return \strncmp($method, 'get', 3) === 0;
+                return \strncmp($method, 'get', 3) === 0 ||
+                    \strncmp($method, 'is', 2) === 0;
             }
         );
 
         $actual = [];
         foreach ($methodsToCheck as $method) {
-            $property = \lcfirst(\substr($method, 3));
+            $length = 3;
+            if (\strncmp($method, 'is', 2) === 0) {
+                $length = 2;
+            }
 
+            $property = \lcfirst(\substr($method, $length));
             $callable = [$object, $method];
             if (\is_callable($callable) === false) {
                 // @codeCoverageIgnoreStart
