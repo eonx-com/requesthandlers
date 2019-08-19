@@ -1,5 +1,16 @@
 services:
     -
-        class: LoyaltyCorp\RequestHandlers\Bridge\PhpStan\ObjectBuilderReturnTypeExtension
+        class: EoneoPay\Standards\Phpstan\FactoryMethodReturnTypeExtension
+        arguments:
+            - LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface
+            - ['build', 'buildWithContext']
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+
+    -
+        class: EoneoPay\Standards\Phpstan\FactoryMethodReturnTypeExtension
+        arguments:
+            - LoyaltyCorp\RequestHandlers\TestHelper\RequestObjectTestHelper
+            - ['buildFailingRequest', 'buildUnvalidatedRequest', 'buildValidatedRequest']
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
