@@ -21,13 +21,6 @@ class TestRequest implements RequestObjectInterface
      *
      * @var mixed
      */
-    private $property;
-
-    /**
-     * @Assert\Type("string")
-     *
-     * @var mixed
-     */
     private $anotherProperty;
 
     /**
@@ -37,6 +30,13 @@ class TestRequest implements RequestObjectInterface
      */
     private $oneTime;
 
+    /**
+     * @Assert\Type("string")
+     *
+     * @var mixed
+     */
+    private $property;
+    
     /**
      * Constructor
      *
