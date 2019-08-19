@@ -36,7 +36,7 @@ class TestRequest implements RequestObjectInterface
      * @var mixed
      */
     private $property;
-    
+
     /**
      * Constructor
      *

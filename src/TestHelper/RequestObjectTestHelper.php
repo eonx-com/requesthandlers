@@ -153,8 +153,10 @@ final class RequestObjectTestHelper
         \asort($methodsToCheck);
 
         foreach ($methodsToCheck as $method) {
-            $property = \lcfirst(\substr($method, \strncmp($method, 'get', 3) === 0 ? 3 : 2));
+            $length = \strncmp($method, 'get', 3) === 0 ? 3 : 2;
+            $property = \lcfirst(\substr($method, $length));
             $callable = [$object, $method];
+
             if (\is_callable($callable) === false) {
                 // @codeCoverageIgnoreStart
                 // Unable to be tested. get_class_methods returns only public methods
