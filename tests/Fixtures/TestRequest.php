@@ -10,11 +10,25 @@ use Tests\LoyaltyCorp\RequestHandlers\Stubs\Exceptions\RequestValidationExceptio
 class TestRequest implements RequestObjectInterface
 {
     /**
+     * @Assert\Type("bool")
+     *
+     * @var bool|null
+     */
+    private $active;
+
+    /**
      * @Assert\Type("string")
      *
      * @var mixed
      */
     private $property;
+
+    /**
+     * @Assert\Type("string")
+     *
+     * @var mixed
+     */
+    private $anotherProperty;
 
     /**
      * @Assert\Type("bool")
@@ -26,13 +40,31 @@ class TestRequest implements RequestObjectInterface
     /**
      * Constructor
      *
+     * @param bool|null $active
      * @param bool|null $oneTime
      * @param mixed $property
+     * @param mixed $anotherProperty
      */
-    public function __construct(?bool $oneTime = null, $property = null)
-    {
+    public function __construct(
+        ?bool $active = null,
+        ?bool $oneTime = null,
+        $property = null,
+        $anotherProperty = null
+    ) {
+        $this->active = $active;
         $this->oneTime = $oneTime;
         $this->property = $property;
+        $this->anotherProperty = $anotherProperty;
+    }
+
+    /**
+     * Returns the bool value of this method
+     *
+     * @return bool|null
+     */
+    public function isActive(): ?bool
+    {
+        return $this->active;
     }
 
     /**
@@ -53,6 +85,16 @@ class TestRequest implements RequestObjectInterface
     public function getProperty()
     {
         return $this->property;
+    }
+
+    /**
+     * Returns another property
+     *
+     * @return mixed
+     */
+    public function getAnotherProperty()
+    {
+        return $this->anotherProperty;
     }
 
     /**

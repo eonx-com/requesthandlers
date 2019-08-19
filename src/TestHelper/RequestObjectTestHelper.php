@@ -150,13 +150,10 @@ final class RequestObjectTestHelper
         );
 
         $actual = [];
-        foreach ($methodsToCheck as $method) {
-            $length = 3;
-            if (\strncmp($method, 'is', 2) === 0) {
-                $length = 2;
-            }
+        \asort($methodsToCheck);
 
-            $property = \lcfirst(\substr($method, $length));
+        foreach ($methodsToCheck as $method) {
+            $property = \lcfirst(\substr($method, \strncmp($method, 'get', 3) === 0 ? 3 : 2));
             $callable = [$object, $method];
             if (\is_callable($callable) === false) {
                 // @codeCoverageIgnoreStart

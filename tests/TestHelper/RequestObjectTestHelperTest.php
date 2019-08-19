@@ -65,10 +65,12 @@ class RequestObjectTestHelperTest extends TestCase
      */
     public function testGetRequestProperties(): void
     {
-        $object = new TestRequest(true, 'test');
+        $object = new TestRequest(true, false, 'test');
         $expected = [
-            'oneTime' => true,
-            'property' => 'test'
+            'anotherProperty' => null,
+            'property' => 'test',
+            'active' => true,
+            'oneTime' => false
         ];
 
         $helper = $this->getHelper($object);
