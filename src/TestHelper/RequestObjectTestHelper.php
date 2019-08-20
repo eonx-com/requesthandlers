@@ -150,6 +150,8 @@ final class RequestObjectTestHelper
         );
 
         $actual = [];
+
+        //sorting methods alphabetically to return all the gets first then is.
         \asort($methodsToCheck);
 
         foreach ($methodsToCheck as $method) {

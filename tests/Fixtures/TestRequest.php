@@ -68,6 +68,16 @@ class TestRequest implements RequestObjectInterface
     }
 
     /**
+     * Returns another property
+     *
+     * @return mixed
+     */
+    public function getAnotherProperty()
+    {
+        return $this->anotherProperty;
+    }
+
+    /**
      * Returns the bool value of this method
      *
      * @return bool|null
@@ -85,16 +95,6 @@ class TestRequest implements RequestObjectInterface
     public function getProperty()
     {
         return $this->property;
-    }
-
-    /**
-     * Returns another property
-     *
-     * @return mixed
-     */
-    public function getAnotherProperty()
-    {
-        return $this->anotherProperty;
     }
 
     /**
