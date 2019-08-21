@@ -18,6 +18,7 @@ class TestBooleanRequest implements RequestObjectInterface
 
     /**
      * TestRequest constructor.
+     *
      * @param bool $boolProperty
      */
     public function __construct(bool $boolProperty)

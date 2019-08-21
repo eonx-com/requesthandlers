@@ -166,17 +166,17 @@ final class RequestObjectTestHelper
     /**
      * Get list of methods that have the provided prefix.
      *
-     * @param array $methods List of methods to look up.
+     * @param string[] $methods List of methods to look up.
      * @param string $prefix Prefix to look for, eg 'get'.
      *
-     * @return array Map of method to matching property name. eg; 'getFoo' => 'foo'
+     * @return string[] Map of method to matching property name. eg; 'getFoo' => 'foo'
      */
     private function getMethodsByPrefix(array $methods, string $prefix): array
     {
         $response = [];
-        foreach($methods as $method) {
-            if (\strncmp($method, $prefix, strlen($prefix)) === 0) {
-                $response[$method] = \lcfirst(\substr($method, strlen($prefix)));
+        foreach ($methods as $method) {
+            if (\strncmp($method, $prefix, \strlen($prefix)) === 0) {
+                $response[$method] = \lcfirst(\substr($method, \strlen($prefix)));
             }
         }
         return $response;
