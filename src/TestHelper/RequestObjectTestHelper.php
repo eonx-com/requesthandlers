@@ -141,17 +141,14 @@ final class RequestObjectTestHelper
         $interfaceMethods = \get_class_methods(RequestObjectInterface::class);
         $instanceMethods = \get_class_methods($object);
 
-        $methodsToCheck = \array_filter(
-            \array_diff($instanceMethods, $interfaceMethods),
-            static function (string $method): bool {
-                return \strncmp($method, 'get', 3) === 0;
-            }
+        $instanceMethodsToCheck = \array_diff($instanceMethods, $interfaceMethods);
+        $methodsToCheck = \array_merge(
+            $this->getMethodsByPrefix($instanceMethodsToCheck, 'get'),
+            $this->getMethodsByPrefix($instanceMethodsToCheck, 'is')
         );
 
         $actual = [];
-        foreach ($methodsToCheck as $method) {
-            $property = \lcfirst(\substr($method, 3));
-
+        foreach ($methodsToCheck as $method => $property) {
             $callable = [$object, $method];
             if (\is_callable($callable) === false) {
                 // @codeCoverageIgnoreStart
@@ -164,5 +161,24 @@ final class RequestObjectTestHelper
         }
 
         return $actual;
+    }
+
+    /**
+     * Get list of methods that have the provided prefix.
+     *
+     * @param array $methods List of methods to look up.
+     * @param string $prefix Prefix to look for, eg 'get'.
+     *
+     * @return array Map of method to matching property name. eg; 'getFoo' => 'foo'
+     */
+    private function getMethodsByPrefix(array $methods, string $prefix): array
+    {
+        $response = [];
+        foreach($methods as $method) {
+            if (\strncmp($method, $prefix, strlen($prefix)) === 0) {
+                $response[$method] = \lcfirst(\substr($method, strlen($prefix)));
+            }
+        }
+        return $response;
     }
 }
