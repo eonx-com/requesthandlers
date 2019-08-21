@@ -9,6 +9,7 @@ use LoyaltyCorp\RequestHandlers\TestHelper\RequestObjectTestHelper;
 use RuntimeException;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Tests\LoyaltyCorp\RequestHandlers\Fixtures\TestBooleanRequest;
 use Tests\LoyaltyCorp\RequestHandlers\Fixtures\TestRequest;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Illuminate\Contracts\Foundation\ApplicationStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\SerializerStub;
@@ -70,6 +71,25 @@ class RequestObjectTestHelperTest extends TestCase
         $object = new TestRequest('test');
         $expected = [
             'property' => 'test'
+        ];
+
+        $helper = $this->getHelper($object);
+
+        $properties = $helper->getRequestProperties($object);
+
+        static::assertSame($expected, $properties);
+    }
+
+    /**
+     * Test retrieving boolean properties from a request object.
+     *
+     * @return void
+     */
+    public function testGetBooleanProperties(): void
+    {
+        $object = new TestBooleanRequest(true);
+        $expected = [
+            'boolProperty' => true
         ];
 
         $helper = $this->getHelper($object);
