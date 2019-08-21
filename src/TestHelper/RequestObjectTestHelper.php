@@ -141,14 +141,14 @@ final class RequestObjectTestHelper
         $interfaceMethods = \get_class_methods(RequestObjectInterface::class);
         $instanceMethods = \get_class_methods($object);
 
-        $instanceMethodsToCheck = \array_diff($instanceMethods, $interfaceMethods);
-        $methodsToCheck = \array_merge(
-            $this->getMethodsByPrefix($instanceMethodsToCheck, 'get'),
-            $this->getMethodsByPrefix($instanceMethodsToCheck, 'is')
+        $instanceOnlyMethods = \array_diff($instanceMethods, $interfaceMethods);
+        $retrieveMethods = \array_merge(
+            $this->getMethodsByPrefix($instanceOnlyMethods, 'get'),
+            $this->getMethodsByPrefix($instanceOnlyMethods, 'is')
         );
 
         $actual = [];
-        foreach ($methodsToCheck as $method => $property) {
+        foreach ($retrieveMethods as $method => $property) {
             $callable = [$object, $method];
             if (\is_callable($callable) === false) {
                 // @codeCoverageIgnoreStart
