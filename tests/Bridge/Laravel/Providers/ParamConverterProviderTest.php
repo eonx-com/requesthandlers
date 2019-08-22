@@ -22,6 +22,7 @@ use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
 use Symfony\Component\Validator\Constraints\DivisibleByValidator;
 use Symfony\Component\Validator\Constraints\EqualToValidator;
+use Symfony\Component\Validator\Constraints\ExpressionValidator;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqualValidator;
 use Symfony\Component\Validator\Constraints\GreaterThanValidator;
 use Symfony\Component\Validator\Constraints\IdenticalToValidator;
@@ -56,6 +57,7 @@ class ParamConverterProviderTest extends TestCase
 
         $services = [
             'requesthandlers_serializer' => RequestBodySerializer::class,
+            'validator.expression' => ExpressionValidator::class,
             Reader::class => AnnotationReader::class,
             ClassMetadataFactoryInterface::class => ClassMetadataFactory::class,
             ConstraintValidatorFactoryInterface::class => ContainerConstraintValidatorFactory::class,

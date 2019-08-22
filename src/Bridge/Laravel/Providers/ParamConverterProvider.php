@@ -40,6 +40,7 @@ use Symfony\Component\Serializer\Normalizer\DateIntervalNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Validator\Constraints\DivisibleByValidator;
 use Symfony\Component\Validator\Constraints\EqualToValidator;
+use Symfony\Component\Validator\Constraints\ExpressionValidator;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqualValidator;
 use Symfony\Component\Validator\Constraints\GreaterThanValidator;
 use Symfony\Component\Validator\Constraints\IdenticalToValidator;
@@ -68,6 +69,7 @@ final class ParamConverterProvider extends ServiceProvider
         $validators = [
             DivisibleByValidator::class,
             EqualToValidator::class,
+            ExpressionValidator::class,
             GreaterThanOrEqualValidator::class,
             GreaterThanValidator::class,
             IdenticalToValidator::class,
@@ -162,6 +164,10 @@ final class ParamConverterProvider extends ServiceProvider
             ];
 
             return new RequestBodySerializer($normalizers, $encoders);
+        });
+
+        $this->app->singleton('validator.expression', static function (): ExpressionValidator {
+            return new ExpressionValidator();
         });
     }
 
