@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace LoyaltyCorp\RequestHandlers\Middleware;
 
 use Closure;
+use DateTimeZone;
 use EoneoPay\ApiFormats\Bridge\Laravel\Responses\FormattedApiResponse;
+use EoneoPay\Utils\Interfaces\UtcDateTimeInterface;
 use Illuminate\Http\Request;
 use LoyaltyCorp\RequestHandlers\Exceptions\MisconfiguredSerializerException;
 use LoyaltyCorp\RequestHandlers\Exceptions\ResponseNormaliserException;
 use LoyaltyCorp\RequestHandlers\Response\Interfaces\SerialisableResponseInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class SerialisableResponseMiddleware
@@ -95,7 +98,10 @@ class SerialisableResponseMiddleware
             // be returning. This does not preclude the use of the resulting normalised data
             // being serialised into XML by other middleware.
             $result = $this->normalizer->normalize($response, 'json', [
-                'ignored_attributes' => $this->ignoredAttributes
+                'ignored_attributes' => $this->ignoredAttributes,
+                // Force the normalisation of datetimes to UTC
+                DateTimeNormalizer::FORMAT_KEY => UtcDateTimeInterface::FORMAT_ZULU,
+                DateTimeNormalizer::TIMEZONE_KEY => new DateTimeZone('UTC')
             ]);
         } catch (ExceptionInterface $exception) {
             throw new ResponseNormaliserException(
