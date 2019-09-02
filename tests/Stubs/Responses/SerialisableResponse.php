@@ -11,6 +11,13 @@ use LoyaltyCorp\RequestHandlers\Response\AbstractSerialisableResponse;
 class SerialisableResponse extends AbstractSerialisableResponse
 {
     /**
+     * The purple elephants.
+     *
+     * @var string
+     */
+    private $purple = 'elephants';
+
+    /**
      * Constructor
      *
      * @param int $statusCode
@@ -20,5 +27,15 @@ class SerialisableResponse extends AbstractSerialisableResponse
         if ($statusCode !== null) {
             $this->setStatusCode($statusCode);
         }
+    }
+
+    /**
+     * Returns the purple elephants.
+     *
+     * @return string
+     */
+    public function getPurple(): string
+    {
+        return $this->purple;
     }
 }
