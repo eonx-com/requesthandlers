@@ -11,6 +11,9 @@ use Tests\LoyaltyCorp\RequestHandlers\Stubs\Responses\SerialisableResponse;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\NormaliserStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
+/**
+ * @covers \LoyaltyCorp\RequestHandlers\Response\ResponseSerialiser
+ */
 class ResponseSerialiserTest extends TestCase
 {
     /**
@@ -37,8 +40,7 @@ class ResponseSerialiserTest extends TestCase
     }
 
     /**
-     * Tests that an exception is thrown when the underlying serialiser
-     * is configured to not support a response object.
+     * Tests that the normalise response is as expected.
      *
      * @return void
      *

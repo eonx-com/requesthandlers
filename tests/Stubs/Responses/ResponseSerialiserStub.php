@@ -6,6 +6,9 @@ namespace Tests\LoyaltyCorp\RequestHandlers\Stubs\Responses;
 use LoyaltyCorp\RequestHandlers\Response\Interfaces\ResponseSerialiserInterface;
 use LoyaltyCorp\RequestHandlers\Response\Interfaces\SerialisableResponseInterface;
 
+/**
+ * @coversNothing
+ */
 class ResponseSerialiserStub implements ResponseSerialiserInterface
 {
     /**
