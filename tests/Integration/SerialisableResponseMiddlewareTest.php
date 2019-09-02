@@ -62,7 +62,14 @@ class SerialisableResponseMiddlewareTest extends TestCase
             return new SerialisableResponse(400);
         };
 
-        $expected = new FormattedApiResponse(['purple' => 'elephants'], 400);
+        $expected = new FormattedApiResponse(
+            [
+                'purple' => 'elephants',
+                'local_time' => '2019-01-01T16:04:05Z',
+                'utc_time' => '2019-02-03T04:05:06Z'
+            ],
+            400
+        );
 
         $pipeline = $this->buildPipeline($request, $lastStage);
 
