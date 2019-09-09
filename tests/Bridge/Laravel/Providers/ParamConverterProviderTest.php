@@ -11,6 +11,7 @@ use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface;
 use LoyaltyCorp\RequestHandlers\Builder\ObjectBuilder;
 use LoyaltyCorp\RequestHandlers\Request\DoctrineParamConverter;
 use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
+use LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface;
 use LoyaltyCorp\RequestHandlers\Serializer\RequestBodySerializer;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ControllerListener;
 use Sensio\Bundle\FrameworkExtraBundle\EventListener\ParamConverterListener;
@@ -33,6 +34,7 @@ use Symfony\Component\Validator\Constraints\NotIdenticalToValidator;
 use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Serializer\DoctrineDenormalizerEntityFinderStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Doctrine\Common\Persistence\ManagerRegistryStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Illuminate\Contracts\Foundation\ApplicationStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
@@ -51,6 +53,11 @@ class ParamConverterProviderTest extends TestCase
     {
         $application = new ApplicationStub();
         $application->bind(ManagerRegistry::class, ManagerRegistryStub::class);
+
+        $application->bind(
+            DoctrineDenormalizerEntityFinderInterface::class,
+            DoctrineDenormalizerEntityFinderStub::class
+        );
 
         // Register services
         (new ParamConverterProvider($application))->register();
@@ -78,7 +85,6 @@ class ParamConverterProviderTest extends TestCase
             ParamConverterManager::class => ParamConverterManager::class,
             RealDoctrineParamConverter::class => DoctrineParamConverter::class,
             ValidatorInterface::class => ValidatorInterface::class
-
         ];
 
         foreach ($services as $abstract => $concrete) {

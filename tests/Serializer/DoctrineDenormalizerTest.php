@@ -6,10 +6,11 @@ namespace Tests\LoyaltyCorp\RequestHandlers\Serializer;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Persistence\ObjectRepository;
 use LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException;
 use LoyaltyCorp\RequestHandlers\Serializer\DoctrineDenormalizer;
+use LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface;
 use stdClass;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Serializer\DoctrineDenormalizerEntityFinderStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**
@@ -29,29 +30,31 @@ class DoctrineDenormalizerTest extends TestCase
     {
         $entity = new stdClass();
 
-        $repository = $this->createMock(ObjectRepository::class);
-        $repository->expects(self::exactly(2))
-            ->method('findOneBy')
-            ->willReturnMap([
-                [['externalId' => 'entityId'], $entity],
-                [['externalId' => 'nope'], null]
-            ]);
-
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects(self::exactly(2))
-            ->method('getRepository')
-            ->with('EntityClass')
-            ->willReturn($repository);
 
-        $denormalizer = new DoctrineDenormalizer($registry);
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder($entity), $registry);
         $result = $denormalizer->denormalize(['id' => 'entityId'], 'EntityClass');
         self::assertSame($entity, $result);
 
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder(), $registry);
         $result = $denormalizer->denormalize(['id' => 'nope'], 'EntityClass');
         self::assertNull($result);
 
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder(), $registry);
         $result = $denormalizer->denormalize(['id' => null], 'EntityClass');
         self::assertNull($result);
+    }
+
+    /**
+     * Create entity finder instance
+     *
+     * @param object|null $entity The entity to return on find
+     *
+     * @return \LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface
+     */
+    private function createEntityFinder(?object $entity = null): DoctrineDenormalizerEntityFinderInterface
+    {
+        return new DoctrineDenormalizerEntityFinderStub($entity);
     }
 
     /**
@@ -66,25 +69,13 @@ class DoctrineDenormalizerTest extends TestCase
     {
         $entity = new stdClass();
 
-        $repository = $this->createMock(ObjectRepository::class);
-        $repository->expects(self::exactly(2))
-            ->method('findOneBy')
-            ->willReturnMap([
-                [['externalId' => 'entityId'], $entity],
-                [['externalId' => 789], $entity]
-            ]);
-
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects(self::exactly(2))
-            ->method('getRepository')
-            ->with('EntityClass')
-            ->willReturn($repository);
 
-        $denormalizer = new DoctrineDenormalizer($registry);
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder($entity), $registry);
         $result = $denormalizer->denormalize('entityId', 'EntityClass');
         self::assertSame($entity, $result);
 
-        $denormalizer = new DoctrineDenormalizer($registry);
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder($entity), $registry);
         $result = $denormalizer->denormalize(789, 'EntityClass');
         self::assertSame($entity, $result);
     }
@@ -101,24 +92,21 @@ class DoctrineDenormalizerTest extends TestCase
     {
         $entity = new stdClass();
 
-        $repository = $this->createMock(ObjectRepository::class);
-        $repository->expects(self::once())
-            ->method('findOneBy')
-            ->willReturnMap([
-                [['customId' => 'entityIdValue'], $entity]
-            ]);
-
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects(self::once())
-            ->method('getRepository')
-            ->with('EntityClass')
-            ->willReturn($repository);
 
-        $denormalizer = new DoctrineDenormalizer($registry, ['EntityClass' => ['customId' => 'xxx']]);
+        $denormalizer = new DoctrineDenormalizer(
+            $this->createEntityFinder($entity),
+            $registry,
+            ['EntityClass' => ['customId' => 'xxx']]
+        );
         $result = $denormalizer->denormalize('entityIdValue', 'EntityClass');
         self::assertSame($entity, $result);
 
-        $denormalizer = new DoctrineDenormalizer($registry, ['EntityClass' => ['abc' => 'xxx', 'yyy' => 'zzz']]);
+        $denormalizer = new DoctrineDenormalizer(
+            $this->createEntityFinder(),
+            $registry,
+            ['EntityClass' => ['abc' => 'xxx', 'yyy' => 'zzz']]
+        );
         $result = $denormalizer->denormalize('somevalue', 'EntityClass');
         self::assertSame('somevalue', $result);
     }
@@ -134,7 +122,7 @@ class DoctrineDenormalizerTest extends TestCase
     public function testDenormalizeNull(): void
     {
         $registry = $this->createMock(ManagerRegistry::class);
-        $denormalizer = new DoctrineDenormalizer($registry);
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder(), $registry);
 
         $result = $denormalizer->denormalize(null, 'EntityClass');
 
@@ -155,7 +143,7 @@ class DoctrineDenormalizerTest extends TestCase
 
         $registry = $this->createMock(ManagerRegistry::class);
 
-        $denormalizer = new DoctrineDenormalizer($registry);
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder(), $registry);
         $result = $denormalizer->denormalize($entity, 'stdClass');
         self::assertSame($entity, $result);
     }
@@ -170,13 +158,9 @@ class DoctrineDenormalizerTest extends TestCase
      */
     public function testDenormalizeScalarNonMatch(): void
     {
-        $repository = $this->createMock(ObjectRepository::class);
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects(self::exactly(1))
-            ->method('getRepository')
-            ->with('EntityClass')
-            ->willReturn($repository);
-        $denormalizer = new DoctrineDenormalizer($registry);
+
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder(), $registry);
 
         $result = $denormalizer->denormalize('purple', 'EntityClass');
 
@@ -195,26 +179,18 @@ class DoctrineDenormalizerTest extends TestCase
     {
         $entity = new stdClass();
 
-        $repository = $this->createMock(ObjectRepository::class);
-        $repository->expects(self::exactly(2))
-            ->method('findOneBy')
-            ->willReturnMap([
-                [['code' => 'ABCDEFG'], $entity],
-                [['code' => 'invalid'], null]
-            ]);
-
         $registry = $this->createMock(ManagerRegistry::class);
-        $registry->expects(self::exactly(2))
-            ->method('getRepository')
-            ->with('EntityClass')
-            ->willReturn($repository);
 
-        $denormalizer = new DoctrineDenormalizer($registry, [
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder($entity), $registry, [
             'EntityClass' => ['code' => 'code', 'skip' => 'skip']
         ]);
 
         $result = $denormalizer->denormalize(['code' => 'ABCDEFG'], 'EntityClass');
         self::assertSame($entity, $result);
+
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder(), $registry, [
+            'EntityClass' => ['code' => 'code', 'skip' => 'skip']
+        ]);
 
         $result = $denormalizer->denormalize(['code' => 'invalid'], 'EntityClass');
         self::assertNull($result);
@@ -241,12 +217,12 @@ class DoctrineDenormalizerTest extends TestCase
     {
         $registry = $this->createMock(ManagerRegistry::class);
 
-        $this->expectException(DoctrineDenormalizerMappingException::class);
-        $this->expectExceptionMessage('Mis-configured class-key mappings in denormalizer');
-
-        $denormalizer = new DoctrineDenormalizer($registry, [
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder(), $registry, [
             'EntityClass' => 'code'
         ]);
+
+        $this->expectException(DoctrineDenormalizerMappingException::class);
+        $this->expectExceptionMessage('Mis-configured class-key mappings in denormalizer');
 
         $denormalizer->denormalize(['code' => 'ABCDEFG'], 'EntityClass');
     }
@@ -276,10 +252,10 @@ class DoctrineDenormalizerTest extends TestCase
                 ['NotEntityClass', null]
             ]);
 
-        $denormalizer = new DoctrineDenormalizer($registry);
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder(), $registry);
 
-        self::assertTrue($denormalizer->supportsDenormalization([], 'EntityClass', null));
-        self::assertFalse($denormalizer->supportsDenormalization([], 'NotEntityClass', null));
+        self::assertTrue($denormalizer->supportsDenormalization([], 'EntityClass'));
+        self::assertFalse($denormalizer->supportsDenormalization([], 'NotEntityClass'));
     }
 
     /**
@@ -291,11 +267,11 @@ class DoctrineDenormalizerTest extends TestCase
     {
         $registry = $this->createMock(ManagerRegistry::class);
 
-        $denormalizer = new DoctrineDenormalizer($registry, null, ['CustomerClass']);
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder(), $registry, null, ['CustomerClass']);
 
         $supports = $denormalizer->supportsDenormalization([
             'email' => 'example@example.com'
-        ], 'CustomerClass', null);
+        ], 'CustomerClass');
 
         self::assertFalse($supports);
     }

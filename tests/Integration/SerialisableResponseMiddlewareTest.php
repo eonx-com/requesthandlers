@@ -13,7 +13,9 @@ use LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers\ParamConverterProvider;
 use LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers\SerialisableResponseProvider;
 use LoyaltyCorp\RequestHandlers\Middleware\SerialisableResponseMiddleware;
 use LoyaltyCorp\RequestHandlers\Response\Interfaces\SerialisableResponseInterface;
+use LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Responses\SerialisableResponse;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Serializer\DoctrineDenormalizerEntityFinderStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Doctrine\Common\Persistence\ManagerRegistryStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Illuminate\Contracts\Foundation\ApplicationStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
@@ -92,7 +94,8 @@ class SerialisableResponseMiddlewareTest extends TestCase
     {
         $app = new ApplicationStub();
         $app->instance(Container::class, $app);
-        $app->instance(ManagerRegistry::class, new ManagerRegistryStub());
+        $app->bind(DoctrineDenormalizerEntityFinderInterface::class, DoctrineDenormalizerEntityFinderStub::class);
+        $app->bind(ManagerRegistry::class, ManagerRegistryStub::class);
         (new ParamConverterProvider($app))->register();
         (new SerialisableResponseProvider($app))->register();
 

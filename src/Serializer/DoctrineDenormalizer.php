@@ -5,6 +5,7 @@ namespace LoyaltyCorp\RequestHandlers\Serializer;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
 use LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException;
+use LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 /**
@@ -33,17 +34,25 @@ final class DoctrineDenormalizer implements DenormalizerInterface
     private $managerRegistry;
 
     /**
+     * @var \LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface
+     */
+    private $entityFinder;
+
+    /**
      * Constructor.
      *
+     * @param \LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface $entityFinder
      * @param \Doctrine\Common\Persistence\ManagerRegistry $managerRegistry
      * @param mixed[]|null $classKeyMap
      * @param mixed[]|null $ignoreClasses
      */
     public function __construct(
+        DoctrineDenormalizerEntityFinderInterface $entityFinder,
         ManagerRegistry $managerRegistry,
         ?array $classKeyMap = null,
         ?array $ignoreClasses = null
     ) {
+        $this->entityFinder = $entityFinder;
         $this->managerRegistry = $managerRegistry;
         $this->classKeyMap = $classKeyMap;
         $this->ignoreClasses = $ignoreClasses ?? [];
@@ -79,7 +88,7 @@ final class DoctrineDenormalizer implements DenormalizerInterface
             return null;
         }
 
-        return $this->findOneBy($class, $criteria);
+        return $this->entityFinder->findOneBy($class, $criteria);
     }
 
     /**
@@ -123,22 +132,8 @@ final class DoctrineDenormalizer implements DenormalizerInterface
             return $data;
         }
         $key = \array_key_first($keys);
-        $result = $this->findOneBy($class, [$key => $data]);
+        $result = $this->entityFinder->findOneBy($class, [$key => $data]);
         return $result ?? $data;
-    }
-
-    /**
-     * Find an entity by given criteria.
-     *
-     * @param string $class Class name
-     * @param mixed[] $criteria Criteria to find an entity
-     *
-     * @return object|null
-     */
-    private function findOneBy(string $class, array $criteria): ?object
-    {
-        return $this->managerRegistry->getRepository($class)
-            ->findOneBy($criteria);
     }
 
     /**
