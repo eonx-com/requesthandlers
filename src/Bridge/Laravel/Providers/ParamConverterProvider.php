@@ -8,6 +8,7 @@ use DateTimeZone;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use EoneoPay\Utils\AnnotationReader;
+use EoneoPay\Utils\Interfaces\AnnotationReaderInterface;
 use FOS\RestBundle\Serializer\SymfonySerializerAdapter;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
@@ -195,6 +196,7 @@ final class ParamConverterProvider extends ServiceProvider
             $phpDocExtractor = new PhpDocExtractor();
 
             return new PropertyNormalizer(
+                $app->make(AnnotationReaderInterface::class),
                 $app->make(ClassMetadataFactoryInterface::class),
                 new CamelCaseToSnakeCaseNameConverter(),
                 new PropertyInfoExtractor(

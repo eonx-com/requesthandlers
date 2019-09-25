@@ -6,6 +6,7 @@ namespace Tests\LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use EoneoPay\Utils\AnnotationReader;
+use EoneoPay\Utils\Interfaces\AnnotationReaderInterface;
 use LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers\ParamConverterProvider;
 use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface;
 use LoyaltyCorp\RequestHandlers\Builder\ObjectBuilder;
@@ -53,6 +54,7 @@ class ParamConverterProviderTest extends TestCase
     {
         $application = new ApplicationStub();
         $application->bind(ManagerRegistry::class, ManagerRegistryStub::class);
+        $application->bind(AnnotationReaderInterface::class, AnnotationReader::class);
 
         $application->bind(
             DoctrineDenormalizerEntityFinderInterface::class,
