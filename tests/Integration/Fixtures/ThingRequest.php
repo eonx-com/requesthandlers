@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\LoyaltyCorp\RequestHandlers\Integration\Fixtures;
 
 use EoneoPay\Utils\DateTime;
+use LoyaltyCorp\RequestHandlers\Annotations\InjectedFromContext;
 use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
 use LoyaltyCorp\RequestHandlers\Validators\Filter;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,7 +28,9 @@ class ThingRequest implements RequestObjectInterface
      *
      * @Assert\Type("string")
      *
-     * @var string
+     * @InjectedFromContext()
+     *
+     * @var string|null
      */
     private $baz;
 
@@ -97,9 +100,9 @@ class ThingRequest implements RequestObjectInterface
     /**
      * Returns the baz
      *
-     * @return string
+     * @return string|null
      */
-    public function getBaz(): string
+    public function getBaz(): ?string
     {
         return $this->baz;
     }

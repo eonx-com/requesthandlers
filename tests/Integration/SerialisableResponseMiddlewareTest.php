@@ -6,6 +6,8 @@ namespace Tests\LoyaltyCorp\RequestHandlers\Integration;
 use Closure;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use EoneoPay\ApiFormats\Bridge\Laravel\Responses\FormattedApiResponse;
+use EoneoPay\Utils\AnnotationReader;
+use EoneoPay\Utils\Interfaces\AnnotationReaderInterface;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline;
@@ -96,6 +98,7 @@ class SerialisableResponseMiddlewareTest extends TestCase
         $app->instance(Container::class, $app);
         $app->bind(DoctrineDenormalizerEntityFinderInterface::class, DoctrineDenormalizerEntityFinderStub::class);
         $app->bind(ManagerRegistry::class, ManagerRegistryStub::class);
+        $app->bind(AnnotationReaderInterface::class, AnnotationReader::class);
         (new ParamConverterProvider($app))->register();
         (new SerialisableResponseProvider($app))->register();
 

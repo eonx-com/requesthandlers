@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace Tests\LoyaltyCorp\RequestHandlers\Integration;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
+use EoneoPay\Utils\AnnotationReader;
 use EoneoPay\Utils\DateTime;
+use EoneoPay\Utils\Interfaces\AnnotationReaderInterface;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline;
@@ -264,6 +266,50 @@ XML;
     }
 
     /**
+     * Test successful request with json.
+     *
+     * @return void
+     *
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    public function testInjectFromContext(): void
+    {
+        $json = <<<JSON
+{
+  "amount": "10.00",
+  "baz": "purple",
+  "date": "2019-01-02T03:04:05Z",
+  "float": 0.75,
+  "int": -10,
+  "string": "string"
+}
+JSON;
+
+        $request = $this->buildRequest(
+            Controller::class,
+            'doThing',
+            $json,
+            'application/json',
+            []
+        );
+
+        $pipeline = $this->buildPipeline($request);
+
+        $pipeline->thenReturn();
+
+        $thing = $request->attributes->get('request');
+
+        // Assert that ThingRequest got built by the param converter
+        static::assertInstanceOf(ThingRequest::class, $thing);
+
+        /**
+         * @var \Tests\LoyaltyCorp\RequestHandlers\Integration\Fixtures\ThingRequest $thing
+         */
+
+        static::assertNull($thing->getBaz());
+    }
+
+    /**
      * Test validation failure.
      *
      * @return void
@@ -325,6 +371,7 @@ VIOLATIONS;
         $app->bind(DoctrineDenormalizerEntityFinderInterface::class, DoctrineDenormalizerEntityFinderStub::class);
         $app->bind(ManagerRegistry::class, ManagerRegistryStub::class);
         (new ParamConverterProvider($app))->register();
+        $app->bind(AnnotationReaderInterface::class, AnnotationReader::class);
 
         $pcm = $app->make(ParamConverterMiddleware::class);
         $validatingMiddleware = $app->make(ValidatingMiddleware::class);
