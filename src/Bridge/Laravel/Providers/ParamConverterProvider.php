@@ -18,6 +18,7 @@ use LoyaltyCorp\RequestHandlers\Encoder\JsonEncoder;
 use LoyaltyCorp\RequestHandlers\Encoder\XmlEncoder;
 use LoyaltyCorp\RequestHandlers\EventListeners\ParamConverterListener;
 use LoyaltyCorp\RequestHandlers\Request\DoctrineParamConverter;
+use LoyaltyCorp\RequestHandlers\Request\Interfaces\ContextConfiguratorInterface;
 use LoyaltyCorp\RequestHandlers\Request\Interfaces\ParamConverterManagerInterface;
 use LoyaltyCorp\RequestHandlers\Request\ParamConverterManager;
 use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
@@ -126,7 +127,10 @@ final class ParamConverterProvider extends ServiceProvider
                 // Note: we're intentionally not using the Validation component in this
                 // ParamConverter so we can customise the validation to occur at a later time
                 return new RequestBodyParamConverter(
-                    new SymfonySerializerAdapter($serializer)
+                    new SymfonySerializerAdapter($serializer),
+                    $app->has(ContextConfiguratorInterface::class) === true
+                        ? $app->make(ContextConfiguratorInterface::class)
+                        : null
                 );
             }
         );

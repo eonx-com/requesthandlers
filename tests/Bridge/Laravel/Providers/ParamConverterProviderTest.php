@@ -11,6 +11,7 @@ use LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers\ParamConverterProvider;
 use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface;
 use LoyaltyCorp\RequestHandlers\Builder\ObjectBuilder;
 use LoyaltyCorp\RequestHandlers\Request\DoctrineParamConverter;
+use LoyaltyCorp\RequestHandlers\Request\Interfaces\ContextConfiguratorInterface;
 use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
 use LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface;
 use LoyaltyCorp\RequestHandlers\Serializer\RequestBodySerializer;
@@ -35,6 +36,7 @@ use Symfony\Component\Validator\Constraints\NotIdenticalToValidator;
 use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\ContextConfiguratorStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Serializer\DoctrineDenormalizerEntityFinderStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Doctrine\Common\Persistence\ManagerRegistryStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Illuminate\Contracts\Foundation\ApplicationStub;
@@ -93,5 +95,30 @@ class ParamConverterProviderTest extends TestCase
             // Ensure services are bound
             self::assertInstanceOf($concrete, $application->get($abstract));
         }
+    }
+    /**
+     * Tests register
+     *
+     * @return void
+     */
+    public function testContextConfigurator(): void
+    {
+        $application = new ApplicationStub();
+        $application->bind(ManagerRegistry::class, ManagerRegistryStub::class);
+        $application->bind(AnnotationReaderInterface::class, AnnotationReader::class);
+        $application->bind(ContextConfiguratorInterface::class, ContextConfiguratorStub::class);
+
+        $application->bind(
+            DoctrineDenormalizerEntityFinderInterface::class,
+            DoctrineDenormalizerEntityFinderStub::class
+        );
+
+        // Register services
+        (new ParamConverterProvider($application))->register();
+
+        $application->get(RequestBodyParamConverter::class);
+
+        // Service was created successfully
+        $this->addToAssertionCount(1);
     }
 }
