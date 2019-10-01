@@ -8,7 +8,7 @@ use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class ObjectValidator implements ObjectValidatorInterface
+final class ObjectValidator implements ObjectValidatorInterface
 {
     /**
      * @var \Symfony\Component\Validator\Validator\ValidatorInterface
