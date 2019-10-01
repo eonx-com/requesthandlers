@@ -17,6 +17,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\Encoder\JsonEncoder as SymfonyJsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder as SymfonyXmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\ContextConfiguratorStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\RequestObjectStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\SerializerStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
@@ -40,6 +41,19 @@ class RequestBodyParamConverterTest extends TestCase
         $object = new stdClass();
         $serializer = new SerializerStub($object);
 
+        $serializerCall = [
+            'data' => '{"content": "here"}',
+            'type' => 'EntityClass',
+            'format' => 'json',
+            'context' => [
+                'disable_type_enforcement' => true,
+                'extra_parameters' => ['attribute' => 'value'],
+                'version' => null,
+                'maxDepth' => null,
+                'enable_max_depth' => null
+            ]
+        ];
+
         $converter = new RequestBodyParamConverter(new SymfonySerializerAdapter($serializer));
 
         $request = $this->buildRequest('application/json', '{"content": "here"}');
@@ -52,6 +66,51 @@ class RequestBodyParamConverterTest extends TestCase
         ]));
 
         static::assertSame($object, $request->attributes->get('property'));
+        static::assertSame([$serializerCall], $serializer->getDeserialiseCalls());
+    }
+
+    /**
+     * Tests that the param converter applies and configures the context
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
+    public function testContextConfigurator(): void
+    {
+        $object = new stdClass();
+        $serializer = new SerializerStub($object);
+
+        $serializerCall = [
+            'data' => '{"content": "here"}',
+            'type' => 'EntityClass',
+            'format' => 'json',
+            'context' => [
+                'disable_type_enforcement' => true,
+                'configurated' => true,
+                'extra_parameters' => ['attribute' => 'value'],
+                'version' => null,
+                'maxDepth' => null,
+                'enable_max_depth' => null
+            ]
+        ];
+
+        $contextConfigurator = new ContextConfiguratorStub();
+        $converter = new RequestBodyParamConverter(
+            new SymfonySerializerAdapter($serializer),
+            $contextConfigurator
+        );
+
+        $request = $this->buildRequest('application/json', '{"content": "here"}');
+
+        $request->attributes->set('attribute', 'value');
+
+        $converter->apply($request, new ParamConverter([
+            'name' => 'property',
+            'class' => 'EntityClass'
+        ]));
+
+        static::assertSame([$serializerCall], $serializer->getDeserialiseCalls());
     }
 
     /**
