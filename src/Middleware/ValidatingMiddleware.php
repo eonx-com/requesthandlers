@@ -5,24 +5,24 @@ namespace LoyaltyCorp\RequestHandlers\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface;
+use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectValidatorInterface;
 use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
 
 final class ValidatingMiddleware
 {
     /**
-     * @var \LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface
+     * @var \LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectValidatorInterface
      */
-    private $objectBuilder;
+    private $objectValidator;
 
     /**
      * Constructor
      *
-     * @param \LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface $objectBuilder
+     * @param \LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectValidatorInterface $objectValidator
      */
-    public function __construct(ObjectBuilderInterface $objectBuilder)
+    public function __construct(ObjectValidatorInterface $objectValidator)
     {
-        $this->objectBuilder = $objectBuilder;
+        $this->objectValidator = $objectValidator;
     }
 
     /**
@@ -53,7 +53,7 @@ final class ValidatingMiddleware
              * @var \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface $parameter
              */
 
-            $this->objectBuilder->ensureValidated($parameter);
+            $this->objectValidator->ensureValidated($parameter);
         }
 
         return $next($request);

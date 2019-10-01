@@ -4,28 +4,22 @@ declare(strict_types=1);
 namespace LoyaltyCorp\RequestHandlers\Builder;
 
 use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface;
+use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectValidatorInterface;
 use LoyaltyCorp\RequestHandlers\Exceptions\MisconfiguredSerializerException;
 use LoyaltyCorp\RequestHandlers\Exceptions\UnsupportedClassException;
 use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
 use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ObjectBuilder implements ObjectBuilderInterface
 {
-    /**
-     * The group used for pre validation.
-     */
-    private const PREVALIDATE_GROUP = 'PreValidate';
-
     /**
      * @var \Symfony\Component\Serializer\SerializerInterface
      */
     private $serializer;
 
     /**
-     * @var \Symfony\Component\Validator\Validator\ValidatorInterface
+     * @var \LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectValidatorInterface
      */
     private $validator;
 
@@ -33,9 +27,9 @@ final class ObjectBuilder implements ObjectBuilderInterface
      * Constructor
      *
      * @param \Symfony\Component\Serializer\SerializerInterface $serializer
-     * @param \Symfony\Component\Validator\Validator\ValidatorInterface $validator
+     * @param \LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectValidatorInterface $validator
      */
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator)
+    public function __construct(SerializerInterface $serializer, ObjectValidatorInterface $validator)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
@@ -82,7 +76,7 @@ final class ObjectBuilder implements ObjectBuilderInterface
          * @see https://youtrack.jetbrains.com/issue/WI-37859 - typehint required until PhpStorm recognises === check
          */
 
-        $this->ensureValidated($instance);
+        $this->validator->ensureValidated($instance);
 
         return $instance;
     }
@@ -97,51 +91,5 @@ final class ObjectBuilder implements ObjectBuilderInterface
     public function buildWithContext(string $objectClass, array $context): RequestObjectInterface
     {
         return $this->build($objectClass, '{}', $context);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function ensureValidated(RequestObjectInterface $instance): void
-    {
-        $violations = $this->validate($instance);
-
-        if ($violations->count() === 0) {
-            return;
-        }
-
-        $exceptionClass = $instance::getExceptionClass();
-
-        throw new $exceptionClass($violations);
-    }
-
-    /**
-     * Validates a request object.
-     *
-     * @param \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface $instance
-     *
-     * @return \Symfony\Component\Validator\ConstraintViolationList
-     */
-    private function validate(RequestObjectInterface $instance): ConstraintViolationList
-    {
-        /** @var \Symfony\Component\Validator\ConstraintViolationList $violations */
-        $violations = $this->validator->validate(
-            $instance,
-            null,
-            [static::PREVALIDATE_GROUP]
-        );
-
-        if ($violations->count()) {
-            return $violations;
-        }
-
-        // Validate with default and resolved validation groups.
-        $groups = $instance->resolveValidationGroups();
-        $groups[] = 'Default';
-
-        /** @var \Symfony\Component\Validator\ConstraintViolationList $violations */
-        $violations = $this->validator->validate($instance, null, $groups);
-
-        return $violations;
     }
 }

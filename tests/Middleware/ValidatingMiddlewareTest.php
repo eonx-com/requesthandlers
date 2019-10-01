@@ -6,7 +6,9 @@ namespace Tests\LoyaltyCorp\RequestHandlers\Middleware;
 use Illuminate\Http\Request;
 use LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException;
 use LoyaltyCorp\RequestHandlers\Middleware\ValidatingMiddleware;
-use Tests\LoyaltyCorp\RequestHandlers\Stubs\Builder\ObjectBuilderStub;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Builder\ObjectValidatorStub;
+use Tests\LoyaltyCorp\RequestHandlers\Stubs\Exceptions\RequestValidationExceptionStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\RequestObjectStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
@@ -22,8 +24,11 @@ class ValidatingMiddlewareTest extends TestCase
      */
     public function testHandleLotsOfViolations(): void
     {
-        $objectBuilder = new ObjectBuilderStub(null, [false]);
-        $middleware = new ValidatingMiddleware($objectBuilder);
+        $objectValidator = new ObjectValidatorStub(
+            new RequestValidationExceptionStub(new ConstraintViolationList())
+        );
+
+        $middleware = new ValidatingMiddleware($objectValidator);
 
         $request = new Request();
         $request->setRouteResolver(static function () {
@@ -58,8 +63,8 @@ class ValidatingMiddlewareTest extends TestCase
      */
     public function testHandleNoParams(): void
     {
-        $objectBuilder = new ObjectBuilderStub();
-        $middleware = new ValidatingMiddleware($objectBuilder);
+        $objectValidator = new ObjectValidatorStub();
+        $middleware = new ValidatingMiddleware($objectValidator);
 
         $request = new Request();
         $request->setRouteResolver(static function () {
@@ -84,8 +89,8 @@ class ValidatingMiddlewareTest extends TestCase
      */
     public function testHandleMissingParams(): void
     {
-        $objectBuilder = new ObjectBuilderStub();
-        $middleware = new ValidatingMiddleware($objectBuilder);
+        $objectValidator = new ObjectValidatorStub();
+        $middleware = new ValidatingMiddleware($objectValidator);
 
         $request = new Request();
         $request->setRouteResolver(static function () {
@@ -110,8 +115,8 @@ class ValidatingMiddlewareTest extends TestCase
      */
     public function testHandleNoRoute(): void
     {
-        $objectBuilder = new ObjectBuilderStub();
-        $middleware = new ValidatingMiddleware($objectBuilder);
+        $objectValidator = new ObjectValidatorStub();
+        $middleware = new ValidatingMiddleware($objectValidator);
 
         $request = new Request();
         $next = static function () {
@@ -132,8 +137,8 @@ class ValidatingMiddlewareTest extends TestCase
      */
     public function testHandleNoViolations(): void
     {
-        $objectBuilder = new ObjectBuilderStub(null, [true]);
-        $middleware = new ValidatingMiddleware($objectBuilder);
+        $objectValidator = new ObjectValidatorStub();
+        $middleware = new ValidatingMiddleware($objectValidator);
 
         $request = new Request();
         $request->setRouteResolver(static function () {
