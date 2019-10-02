@@ -48,34 +48,6 @@ class DoctrineDenormalizerTest extends TestCase
     }
 
     /**
-     * Tests denormalize passes context to the entity finder.
-     *
-     * @return void
-     *
-     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
-     */
-    public function testDenormalizePassesContext(): void
-    {
-        $registry = $this->createMock(ManagerRegistry::class);
-
-        $finder = new DoctrineDenormalizerEntityFinderStub();
-        $denormalizer = new DoctrineDenormalizer($finder, $registry);
-
-        $expected = [
-            'class' => 'EntityClass',
-            'criteria' => [
-                'externalId' => 'entityId'
-            ],
-            'context' => ['context' => 'array']
-        ];
-
-        $denormalizer->denormalize(['id' => 'entityId'], 'EntityClass', 'json', ['context' => 'array']);
-
-        static::assertSame([$expected], $finder->getCalls());
-    }
-
-    /**
      * Tests denormalize null
      *
      * @return void
@@ -110,6 +82,34 @@ class DoctrineDenormalizerTest extends TestCase
         $denormalizer = new DoctrineDenormalizer($this->createEntityFinder(), $registry);
         $result = $denormalizer->denormalize($entity, 'stdClass');
         self::assertSame($entity, $result);
+    }
+
+    /**
+     * Tests denormalize passes context to the entity finder.
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizePassesContext(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+
+        $finder = new DoctrineDenormalizerEntityFinderStub();
+        $denormalizer = new DoctrineDenormalizer($finder, $registry);
+
+        $expected = [
+            'class' => 'EntityClass',
+            'criteria' => [
+                'externalId' => 'entityId'
+            ],
+            'context' => ['context' => 'array']
+        ];
+
+        $denormalizer->denormalize(['id' => 'entityId'], 'EntityClass', 'json', ['context' => 'array']);
+
+        static::assertSame([$expected], $finder->getCalls());
     }
 
     /**
