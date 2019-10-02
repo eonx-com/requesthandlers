@@ -15,6 +15,8 @@ use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**
  * @covers \LoyaltyCorp\RequestHandlers\Serializer\DoctrineDenormalizer
+ *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods) Required to test
  */
 class DoctrineDenormalizerTest extends TestCase
 {
@@ -46,69 +48,31 @@ class DoctrineDenormalizerTest extends TestCase
     }
 
     /**
-     * Create entity finder instance
-     *
-     * @param object|null $entity The entity to return on find
-     *
-     * @return \LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface
-     */
-    private function createEntityFinder(?object $entity = null): DoctrineDenormalizerEntityFinderInterface
-    {
-        return new DoctrineDenormalizerEntityFinderStub($entity);
-    }
-
-    /**
-     * Tests denormalize strings as ID fields.
+     * Tests denormalize passes context to the entity finder.
      *
      * @return void
      *
      * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
-    public function testDenormalizeScalarMatchingId(): void
+    public function testDenormalizePassesContext(): void
     {
-        $entity = new stdClass();
-
         $registry = $this->createMock(ManagerRegistry::class);
 
-        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder($entity), $registry);
-        $result = $denormalizer->denormalize('entityId', 'EntityClass');
-        self::assertSame($entity, $result);
+        $finder = new DoctrineDenormalizerEntityFinderStub();
+        $denormalizer = new DoctrineDenormalizer($finder, $registry);
 
-        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder($entity), $registry);
-        $result = $denormalizer->denormalize(789, 'EntityClass');
-        self::assertSame($entity, $result);
-    }
+        $expected = [
+            'class' => 'EntityClass',
+            'criteria' => [
+                'externalId' => 'entityId'
+            ],
+            'context' => ['context' => 'array']
+        ];
 
-    /**
-     * Tests denormalize strings as ID fields will uses the first custom field if defined.
-     *
-     * @return void
-     *
-     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
-     */
-    public function testDenormalizeStringsWithCustomId(): void
-    {
-        $entity = new stdClass();
+        $denormalizer->denormalize(['id' => 'entityId'], 'EntityClass', 'json', ['context' => 'array']);
 
-        $registry = $this->createMock(ManagerRegistry::class);
-
-        $denormalizer = new DoctrineDenormalizer(
-            $this->createEntityFinder($entity),
-            $registry,
-            ['EntityClass' => ['customId' => 'xxx']]
-        );
-        $result = $denormalizer->denormalize('entityIdValue', 'EntityClass');
-        self::assertSame($entity, $result);
-
-        $denormalizer = new DoctrineDenormalizer(
-            $this->createEntityFinder(),
-            $registry,
-            ['EntityClass' => ['abc' => 'xxx', 'yyy' => 'zzz']]
-        );
-        $result = $denormalizer->denormalize('somevalue', 'EntityClass');
-        self::assertSame('somevalue', $result);
+        static::assertSame([$expected], $finder->getCalls());
     }
 
     /**
@@ -149,6 +113,29 @@ class DoctrineDenormalizerTest extends TestCase
     }
 
     /**
+     * Tests denormalize strings as ID fields.
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizeScalarMatchingId(): void
+    {
+        $entity = new stdClass();
+
+        $registry = $this->createMock(ManagerRegistry::class);
+
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder($entity), $registry);
+        $result = $denormalizer->denormalize('entityId', 'EntityClass');
+        self::assertSame($entity, $result);
+
+        $denormalizer = new DoctrineDenormalizer($this->createEntityFinder($entity), $registry);
+        $result = $denormalizer->denormalize(789, 'EntityClass');
+        self::assertSame($entity, $result);
+    }
+
+    /**
      * Tests denormalize scalar that doesn't match anything.
      *
      * @return void
@@ -165,6 +152,37 @@ class DoctrineDenormalizerTest extends TestCase
         $result = $denormalizer->denormalize('purple', 'EntityClass');
 
         self::assertSame('purple', $result);
+    }
+
+    /**
+     * Tests denormalize strings as ID fields will uses the first custom field if defined.
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizeStringsWithCustomId(): void
+    {
+        $entity = new stdClass();
+
+        $registry = $this->createMock(ManagerRegistry::class);
+
+        $denormalizer = new DoctrineDenormalizer(
+            $this->createEntityFinder($entity),
+            $registry,
+            ['EntityClass' => ['customId' => 'xxx']]
+        );
+        $result = $denormalizer->denormalize('entityIdValue', 'EntityClass');
+        self::assertSame($entity, $result);
+
+        $denormalizer = new DoctrineDenormalizer(
+            $this->createEntityFinder(),
+            $registry,
+            ['EntityClass' => ['abc' => 'xxx', 'yyy' => 'zzz']]
+        );
+        $result = $denormalizer->denormalize('somevalue', 'EntityClass');
+        self::assertSame('somevalue', $result);
     }
 
     /**
@@ -274,5 +292,17 @@ class DoctrineDenormalizerTest extends TestCase
         ], 'CustomerClass');
 
         self::assertFalse($supports);
+    }
+
+    /**
+     * Create entity finder instance
+     *
+     * @param object|null $entity The entity to return on find
+     *
+     * @return \LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface
+     */
+    private function createEntityFinder(?object $entity = null): DoctrineDenormalizerEntityFinderInterface
+    {
+        return new DoctrineDenormalizerEntityFinderStub($entity);
     }
 }

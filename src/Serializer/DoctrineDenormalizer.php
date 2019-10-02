@@ -88,7 +88,7 @@ final class DoctrineDenormalizer implements DenormalizerInterface
             return null;
         }
 
-        return $this->entityFinder->findOneBy($class, $criteria);
+        return $this->entityFinder->findOneBy($class, $criteria, $context);
     }
 
     /**

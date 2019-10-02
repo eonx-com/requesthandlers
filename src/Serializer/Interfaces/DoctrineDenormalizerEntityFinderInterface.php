@@ -10,8 +10,13 @@ interface DoctrineDenormalizerEntityFinderInterface
      *
      * @param string $class Class name
      * @param mixed[] $criteria Criteria to find an entity
+     * @param mixed[]|null $context
      *
      * @return object|null
      */
-    public function findOneBy(string $class, array $criteria): ?object;
+    public function findOneBy(
+        string $class,
+        array $criteria,
+        ?array $context = null
+    ): ?object;
 }

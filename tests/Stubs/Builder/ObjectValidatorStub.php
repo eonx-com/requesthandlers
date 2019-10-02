@@ -7,6 +7,9 @@ use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectValidatorInterface;
 use LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException;
 use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
 
+/**
+ * @coversNothing
+ */
 class ObjectValidatorStub implements ObjectValidatorInterface
 {
     /**

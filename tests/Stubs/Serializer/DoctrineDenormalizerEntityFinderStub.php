@@ -11,6 +11,11 @@ use LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntity
 class DoctrineDenormalizerEntityFinderStub implements DoctrineDenormalizerEntityFinderInterface
 {
     /**
+     * @var mixed[]
+     */
+    private $calls;
+
+    /**
      * @var object|null
      */
     private $entity;
@@ -28,8 +33,20 @@ class DoctrineDenormalizerEntityFinderStub implements DoctrineDenormalizerEntity
     /**
      * {@inheritdoc}
      */
-    public function findOneBy(string $class, array $criteria): ?object
+    public function findOneBy(string $class, array $criteria, ?array $context = null): ?object
     {
+        $this->calls[] = \compact('class', 'criteria', 'context');
+
         return $this->entity;
+    }
+
+    /**
+     * Returns calls to findOneBy.
+     *
+     * @return mixed[]
+     */
+    public function getCalls(): array
+    {
+        return $this->calls;
     }
 }
