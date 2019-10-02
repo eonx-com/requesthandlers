@@ -4,14 +4,13 @@ declare(strict_types=1);
 namespace Tests\LoyaltyCorp\RequestHandlers\TestHelper;
 
 use LoyaltyCorp\RequestHandlers\Builder\ObjectBuilder;
+use LoyaltyCorp\RequestHandlers\Builder\ObjectValidator;
 use LoyaltyCorp\RequestHandlers\TestHelper\Exceptions\ValidationFailedException;
 use LoyaltyCorp\RequestHandlers\TestHelper\RequestObjectTestHelper;
 use RuntimeException;
 use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tests\LoyaltyCorp\RequestHandlers\Fixtures\TestBooleanRequest;
 use Tests\LoyaltyCorp\RequestHandlers\Fixtures\TestRequest;
-use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Illuminate\Contracts\Foundation\ApplicationStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\SerializerStub;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Symfony\Validator\ValidatorStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
@@ -62,15 +61,15 @@ class RequestObjectTestHelperTest extends TestCase
     }
 
     /**
-     * Tests unvalidated request creation
+     * Test retrieving boolean properties from a request object.
      *
      * @return void
      */
-    public function testGetRequestProperties(): void
+    public function testGetBooleanProperties(): void
     {
-        $object = new TestRequest('test');
+        $object = new TestBooleanRequest(true);
         $expected = [
-            'property' => 'test'
+            'boolProperty' => true
         ];
 
         $helper = $this->getHelper($object);
@@ -81,15 +80,15 @@ class RequestObjectTestHelperTest extends TestCase
     }
 
     /**
-     * Test retrieving boolean properties from a request object.
+     * Tests unvalidated request creation
      *
      * @return void
      */
-    public function testGetBooleanProperties(): void
+    public function testGetRequestProperties(): void
     {
-        $object = new TestBooleanRequest(true);
+        $object = new TestRequest('test');
         $expected = [
-            'boolProperty' => true
+            'property' => 'test'
         ];
 
         $helper = $this->getHelper($object);
@@ -163,13 +162,9 @@ class RequestObjectTestHelperTest extends TestCase
      */
     private function getHelper($object = null, ?array $violations = null): RequestObjectTestHelper
     {
-        $container = new ApplicationStub();
-
         $serializer = new SerializerStub($object);
-        $container->instance('requesthandlers_serializer', $serializer);
-
-        $validator = new ValidatorStub($violations);
-        $container->instance(ValidatorInterface::class, $validator);
+        $innerValidator = new ValidatorStub($violations);
+        $validator = new ObjectValidator($innerValidator);
 
         return new RequestObjectTestHelper(
             new ObjectBuilder($serializer, $validator),

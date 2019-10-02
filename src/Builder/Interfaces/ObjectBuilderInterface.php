@@ -29,15 +29,4 @@ interface ObjectBuilderInterface
      * @return \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface
      */
     public function buildWithContext(string $objectClass, array $context): RequestObjectInterface;
-
-    /**
-     * Ensures that a Request Object is validated.
-     *
-     * @param \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface $object
-     *
-     * @return void
-     *
-     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException
-     */
-    public function ensureValidated(RequestObjectInterface $object): void;
 }

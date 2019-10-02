@@ -5,8 +5,6 @@ namespace Tests\LoyaltyCorp\RequestHandlers\Stubs\Builder;
 
 use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface;
 use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
-use Symfony\Component\Validator\ConstraintViolationList;
-use Tests\LoyaltyCorp\RequestHandlers\Stubs\Exceptions\RequestValidationExceptionStub;
 
 class ObjectBuilderStub implements ObjectBuilderInterface
 {
@@ -18,22 +16,13 @@ class ObjectBuilderStub implements ObjectBuilderInterface
     private $objects;
 
     /**
-     * If the objects passed to ensure are valid.
-     *
-     * @var bool[]
-     */
-    private $validated;
-
-    /**
      * Constructor
      *
      * @param \LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface[]|null $objects
-     * @param bool[]|null $validated
      */
-    public function __construct(?array $objects = null, ?array $validated = null)
+    public function __construct(?array $objects = null)
     {
         $this->objects = $objects ?? [];
-        $this->validated = $validated ?? [];
     }
 
     /**
@@ -50,19 +39,5 @@ class ObjectBuilderStub implements ObjectBuilderInterface
     public function buildWithContext(string $objectClass, array $context): RequestObjectInterface
     {
         return $this->build($objectClass, '{}', $context);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function ensureValidated(RequestObjectInterface $object): void
-    {
-        $next = \array_shift($this->validated);
-
-        if ($next === true) {
-            return;
-        }
-
-        throw new RequestValidationExceptionStub(new ConstraintViolationList());
     }
 }
