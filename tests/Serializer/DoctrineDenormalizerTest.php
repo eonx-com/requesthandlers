@@ -155,6 +155,34 @@ class DoctrineDenormalizerTest extends TestCase
     }
 
     /**
+     * Tests denormalize passes context to the entity finder when a scalar value is passed.
+     *
+     * @return void
+     *
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testDenormalizeScalarPassesContext(): void
+    {
+        $registry = $this->createMock(ManagerRegistry::class);
+
+        $finder = new DoctrineDenormalizerEntityFinderStub();
+        $denormalizer = new DoctrineDenormalizer($finder, $registry);
+
+        $expected = [
+            'class' => 'EntityClass',
+            'criteria' => [
+                'externalId' => 'entityId'
+            ],
+            'context' => ['context' => 'array']
+        ];
+
+        $denormalizer->denormalize('entityId', 'EntityClass', 'json', ['context' => 'array']);
+
+        static::assertSame([$expected], $finder->getCalls());
+    }
+
+    /**
      * Tests denormalize strings as ID fields will uses the first custom field if defined.
      *
      * @return void

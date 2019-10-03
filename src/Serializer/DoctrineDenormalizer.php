@@ -22,6 +22,11 @@ final class DoctrineDenormalizer implements DenormalizerInterface
     private $classKeyMap;
 
     /**
+     * @var \LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface
+     */
+    private $entityFinder;
+
+    /**
      * List of classes this normalizer does not handle.
      *
      * @var mixed[]
@@ -32,11 +37,6 @@ final class DoctrineDenormalizer implements DenormalizerInterface
      * @var \Doctrine\Common\Persistence\ManagerRegistry
      */
     private $managerRegistry;
-
-    /**
-     * @var \LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface
-     */
-    private $entityFinder;
 
     /**
      * Constructor.
@@ -67,7 +67,7 @@ final class DoctrineDenormalizer implements DenormalizerInterface
     {
         // If the data isn't an array, hand off to see if we can still discover the entity from it.
         if (\is_array($data) === false) {
-            return $this->denormalizeNonArray($data, $class);
+            return $this->denormalizeNonArray($data, $class, $context);
         }
 
         // entity criteria
@@ -113,14 +113,15 @@ final class DoctrineDenormalizer implements DenormalizerInterface
     /**
      * Attempts to denormalize a string or integer into an Entity
      *
-     * @param mixed  $data    Data to restore
-     * @param string $class   The expected class to instantiate
+     * @param mixed $data Data to restore
+     * @param string $class The expected class to instantiate
+     * @param mixed[]|null $context
      *
      * @return mixed
      *
      * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
      */
-    private function denormalizeNonArray($data, string $class)
+    private function denormalizeNonArray($data, string $class, ?array $context = null)
     {
         if (\is_string($data) !== true && \is_int($data) !== true) {
             return $data;
@@ -131,8 +132,10 @@ final class DoctrineDenormalizer implements DenormalizerInterface
         if (\count($keys) > 2) {
             return $data;
         }
+
         $key = \array_key_first($keys);
-        $result = $this->entityFinder->findOneBy($class, [$key => $data]);
+        $result = $this->entityFinder->findOneBy($class, [$key => $data], $context);
+
         return $result ?? $data;
     }
 
