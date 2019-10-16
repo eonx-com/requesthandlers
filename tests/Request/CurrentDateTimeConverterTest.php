@@ -7,6 +7,7 @@ use DateTime as BaseDateTime;
 use EoneoPay\Utils\DateTime;
 use LoyaltyCorp\RequestHandlers\Request\CurrentDateTimeConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
@@ -77,6 +78,36 @@ class CurrentDateTimeConverterTest extends TestCase
         $supports = $converter->supports($param);
 
         self::assertTrue($supports);
+    }
+
+    /**
+     * Test that returning a non-datetime classes are not supported.
+     *
+     * @return void
+     */
+    public function testNotSupportsNonDateTime(): void
+    {
+        $param = new ParamConverter(['class' => stdClass::class]);
+        $converter = $this->getConverter();
+
+        $supports = $converter->supports($param);
+
+        self::assertFalse($supports);
+    }
+
+    /**
+     * Test that a missing class definition is not supported.
+     *
+     * @return void
+     */
+    public function testFalseForMissingClass(): void
+    {
+        $param = new ParamConverter([]);
+        $converter = $this->getConverter();
+
+        $supports = $converter->supports($param);
+
+        self::assertFalse($supports);
     }
 
     /**
