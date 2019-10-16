@@ -10,6 +10,7 @@ use EoneoPay\Utils\Interfaces\AnnotationReaderInterface;
 use LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers\ParamConverterProvider;
 use LoyaltyCorp\RequestHandlers\Builder\Interfaces\ObjectBuilderInterface;
 use LoyaltyCorp\RequestHandlers\Builder\ObjectBuilder;
+use LoyaltyCorp\RequestHandlers\Request\CurrentDateTimeConverter;
 use LoyaltyCorp\RequestHandlers\Request\DoctrineParamConverter;
 use LoyaltyCorp\RequestHandlers\Request\Interfaces\ContextConfiguratorInterface;
 use LoyaltyCorp\RequestHandlers\Request\RequestBodyParamConverter;
@@ -73,6 +74,7 @@ class ParamConverterProviderTest extends TestCase
             ClassMetadataFactoryInterface::class => ClassMetadataFactory::class,
             ConstraintValidatorFactoryInterface::class => ContainerConstraintValidatorFactory::class,
             ControllerListener::class => ControllerListener::class,
+            CurrentDateTimeConverter::class => CurrentDateTimeConverter::class,
             DivisibleByValidator::class => DivisibleByValidator::class,
             EqualToValidator::class => EqualToValidator::class,
             GreaterThanOrEqualValidator::class => GreaterThanOrEqualValidator::class,

@@ -19,6 +19,7 @@ use LoyaltyCorp\RequestHandlers\Builder\ObjectValidator;
 use LoyaltyCorp\RequestHandlers\Encoder\JsonEncoder;
 use LoyaltyCorp\RequestHandlers\Encoder\XmlEncoder;
 use LoyaltyCorp\RequestHandlers\EventListeners\ParamConverterListener;
+use LoyaltyCorp\RequestHandlers\Request\CurrentDateTimeConverter;
 use LoyaltyCorp\RequestHandlers\Request\DoctrineParamConverter;
 use LoyaltyCorp\RequestHandlers\Request\Interfaces\ContextConfiguratorInterface;
 use LoyaltyCorp\RequestHandlers\Request\Interfaces\ParamConverterManagerInterface;
@@ -143,6 +144,7 @@ final class ParamConverterProvider extends ServiceProvider
             static function (Container $app): ParamConverterManager {
                 $manager = new ParamConverterManager();
                 $manager->add($app->make(RealDoctrineParamConverter::class), 5, null);
+                $manager->add($app->make(CurrentDateTimeConverter::class), 2, null);
                 $manager->add($app->make(RequestBodyParamConverter::class), 1, null);
 
                 return $manager;
