@@ -46,11 +46,8 @@ class CurrentDateTimeConverter implements ParamConverterInterface
             return false;
         }
 
-        if (\is_subclass_of($class, DateTimeInterface::class) ||
-            \is_subclass_of($class, DateTime::class)
-        ) {
-            return true;
-        }
-        return false;
+        return (\is_subclass_of($class, DateTimeInterface::class) === true ||
+            \is_subclass_of($class, DateTime::class) === true
+        );
     }
 }
