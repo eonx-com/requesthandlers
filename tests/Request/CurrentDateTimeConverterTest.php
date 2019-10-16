@@ -17,6 +17,8 @@ class CurrentDateTimeConverterTest extends TestCase
 {
     /**
      * Test the application of the DateTime field.
+     *
+     * @return void
      */
     public function testApply(): void
     {
@@ -32,6 +34,8 @@ class CurrentDateTimeConverterTest extends TestCase
 
     /**
      * Test skipping the application of the datetime field that is already filled.
+     *
+     * @return void
      */
     public function testFailingApply(): void
     {
@@ -47,6 +51,8 @@ class CurrentDateTimeConverterTest extends TestCase
 
     /**
      * Test that returning a BaseDateTime is supported.
+     *
+     * @return void
      */
     public function testSupportsBaseDateTime(): void
     {
@@ -60,6 +66,8 @@ class CurrentDateTimeConverterTest extends TestCase
 
     /**
      * Test that returning a EoneoPayUtils datetime is supported.
+     *
+     * @return void
      */
     public function testSupportsEoneoPayDateTime(): void
     {
@@ -71,6 +79,11 @@ class CurrentDateTimeConverterTest extends TestCase
         self::assertTrue($supports);
     }
 
+    /**
+     * Get a CurrentDateTimeConverter for testing.
+     *
+     * @return \LoyaltyCorp\RequestHandlers\Request\CurrentDateTimeConverter
+     */
     private function getConverter(): CurrentDateTimeConverter
     {
         return new CurrentDateTimeConverter();

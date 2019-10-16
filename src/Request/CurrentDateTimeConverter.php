@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace LoyaltyCorp\RequestHandlers\Request;
 
@@ -7,7 +8,6 @@ use DateTimeInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Create a date time on demand in controllers.
@@ -23,7 +23,7 @@ class CurrentDateTimeConverter implements ParamConverterInterface
 
         // Don't override existing values.
         if ($request->attributes->has($param) === true &&
-            $value = $request->attributes->get($param) !== null) {
+            $request->attributes->get($param) !== null) {
             return false;
         }
 
@@ -40,12 +40,14 @@ class CurrentDateTimeConverter implements ParamConverterInterface
      */
     public function supports(ParamConverter $configuration)
     {
-        if ($configuration->getClass() === null) {
+        /** @var string|null $class */
+        $class = $configuration->getClass();
+        if ($class === null) {
             return false;
         }
 
-        if (\is_subclass_of($configuration->getClass(), DateTimeInterface::class) ||
-            \is_subclass_of($configuration->getClass(), DateTime::class)
+        if (\is_subclass_of($class, DateTimeInterface::class) ||
+            \is_subclass_of($class, DateTime::class)
         ) {
             return true;
         }
