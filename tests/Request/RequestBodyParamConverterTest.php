@@ -50,7 +50,8 @@ class RequestBodyParamConverterTest extends TestCase
                 'extra_parameters' => ['attribute' => 'value'],
                 'version' => null,
                 'maxDepth' => null,
-                'enable_max_depth' => null
+                'enable_max_depth' => null,
+                'skip_null_values' => true
             ]
         ];
 
@@ -91,7 +92,8 @@ class RequestBodyParamConverterTest extends TestCase
                 'extra_parameters' => ['attribute' => 'value'],
                 'version' => null,
                 'maxDepth' => null,
-                'enable_max_depth' => null
+                'enable_max_depth' => null,
+                'skip_null_values' => true
             ]
         ];
 
