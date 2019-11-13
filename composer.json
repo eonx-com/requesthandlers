@@ -42,6 +42,9 @@
     "sebastian/phpcpd": "^4.1",
     "squizlabs/php_codesniffer": "^3.4"
   },
+  "replace": {
+    "loyaltycorp/requesthandlers": "*"
+  },
   "minimum-stability": "stable",
   "prefer-stable": true,
   "config": {
