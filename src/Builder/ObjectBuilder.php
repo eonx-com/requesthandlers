@@ -57,7 +57,7 @@ final class ObjectBuilder implements ObjectBuilderInterface
         if (($instance instanceof $objectClass) === false) {
             throw new MisconfiguredSerializerException(\sprintf(
                 'The serializer returned an object of type "%s" but it is not an instance of "%s"',
-                \get_class($instance),
+                \is_array($instance) ? 'array' : \get_class($instance),
                 $objectClass
             ));
         }

@@ -6,7 +6,9 @@ namespace LoyaltyCorp\RequestHandlers\EventListeners;
 use LoyaltyCorp\RequestHandlers\Exceptions\InvalidRequestAttributeException;
 use LoyaltyCorp\RequestHandlers\Exceptions\ParamConverterMisconfiguredException;
 use LoyaltyCorp\RequestHandlers\Request\Interfaces\ParamConverterManagerInterface;
+use ReflectionFunction;
 use ReflectionFunctionAbstract;
+use ReflectionMethod;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,6 +60,7 @@ class ParamConverterListener implements EventSubscriberInterface
      *
      * @throws \ReflectionException
      * @throws \LoyaltyCorp\RequestHandlers\Exceptions\InvalidRequestAttributeException
+     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\ParamConverterMisconfiguredException
      */
     public function onKernelController(FilterControllerEvent $event): void
     {
@@ -173,15 +176,15 @@ class ParamConverterListener implements EventSubscriberInterface
     private function getReflection(callable $controller): ReflectionFunctionAbstract
     {
         if (\is_array($controller)) {
-            return new \ReflectionMethod($controller[0], $controller[1]);
+            return new ReflectionMethod($controller[0], $controller[1]);
         }
 
         if (\is_object($controller) && \is_callable([$controller, '__invoke'])) {
-            return new \ReflectionMethod($controller, '__invoke');
+            return new ReflectionMethod($controller, '__invoke');
         }
 
         if (\is_string($controller)) {
-            return new \ReflectionFunction($controller);
+            return new ReflectionFunction($controller);
         }
 
         // @codeCoverageIgnoreStart

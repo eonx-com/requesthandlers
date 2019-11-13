@@ -1,5 +1,5 @@
 {
-  "name": "loyaltycorp/requesthandlers",
+  "name": "eonx-com/requesthandlers",
   "description": "Support library to enable Request DTO and Doctrine ParamConverters in Lumen",
   "keywords": [
     "paramconverters",
@@ -19,8 +19,8 @@
   },
   "require": {
     "php": "^7.2",
-    "eoneopay/apiformats": "dev-master",
-    "eoneopay/utils": "^0.2.2",
+    "eonx-com/apiformats": "^1.0",
+    "eonx-com/utils": "^1.0",
     "friendsofsymfony/rest-bundle": "^2.5",
     "laravel/lumen-framework": "^5.8",
     "sensio/framework-extra-bundle": "^5.3",
@@ -32,8 +32,8 @@
     "symfony/validator": "^4.2"
   },
   "require-dev": {
-    "eoneopay/standards": "dev-master",
-    "phpmd/phpmd": "^2.6",
+    "eonx-com/standards": "^0.2",
+    "phpmd/phpmd": "^2.6,!=2.7.0",
     "phpstan/phpstan": "^0.11.6",
     "phpstan/phpstan-phpunit": "^0.11.1",
     "phpstan/phpstan-strict-rules": "^0.11.0",

@@ -63,18 +63,18 @@ final class DoctrineDenormalizer implements DenormalizerInterface
      *
      * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
      */
-    public function denormalize($data, $class, $format = null, ?array $context = null)
+    public function denormalize($data, $type, $format = null, ?array $context = null)
     {
         // If the data isn't an array, hand off to see if we can still discover the entity from it.
         if (\is_array($data) === false) {
-            return $this->denormalizeNonArray($data, $class, $context);
+            return $this->denormalizeNonArray($data, $type, $context);
         }
 
         // entity criteria
         $criteria = [];
 
         // Find lookup key for given class
-        $findKeys = $this->getClassLookupKey($class);
+        $findKeys = $this->getClassLookupKey($type);
 
         foreach ($findKeys as $entityKey => $requestKey) {
             if (\array_key_exists($requestKey, $data) === true &&
@@ -88,7 +88,7 @@ final class DoctrineDenormalizer implements DenormalizerInterface
             return null;
         }
 
-        return $this->entityFinder->findOneBy($class, $criteria, $context);
+        return $this->entityFinder->findOneBy($type, $criteria, $context);
     }
 
     /**

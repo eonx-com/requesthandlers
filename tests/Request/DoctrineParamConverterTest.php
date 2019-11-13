@@ -32,6 +32,7 @@ class DoctrineParamConverterTest extends TestCase
         try {
             $converter->apply(new Request(), new ParamConverter([]));
         } catch (Exception $thrown) {
+            // Pass through intentionally
         }
 
         static::assertInstanceOf(DoctrineParamConverterMisconfiguredException::class, $thrown);
@@ -54,6 +55,7 @@ class DoctrineParamConverterTest extends TestCase
         try {
             $converter->apply(new Request(), new ParamConverter([]));
         } catch (Exception $thrown) {
+            // Pass through intentionally
         }
 
         static::assertInstanceOf(DoctrineParamConverterMisconfiguredException::class, $thrown);
@@ -79,6 +81,7 @@ class DoctrineParamConverterTest extends TestCase
                 'name' => 'coupon'
             ]));
         } catch (Exception $thrown) {
+            // Pass through intentionally
         }
 
         static::assertInstanceOf(DoctrineParamConverterEntityNotFoundException::class, $thrown);

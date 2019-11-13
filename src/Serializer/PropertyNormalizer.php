@@ -62,12 +62,18 @@ final class PropertyNormalizer extends BasePropertyNormalizer
      *
      * Adds functionality to denormalize to add additional properties configured as part of the context.
      */
-    public function denormalize($data, $class, $format = null, array $context = [])
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
-        $object = parent::denormalize($data, $class, $format, $context);
+        $object = parent::denormalize($data, $type, $format, $context);
+
+        // We didnt get an object, but this doesnt actually happen in real life, just
+        // because of the return type of denormalize.
+        if (\is_array($object) === true) {
+            return $object; // @codeCoverageIgnore
+        }
 
         /** @var mixed[] $extras */
-        $extras = $context[self::EXTRA_PARAMETERS] ?? $this->defaultContext[self::EXTRA_PARAMETERS][$class] ?? [];
+        $extras = $context[self::EXTRA_PARAMETERS] ?? $this->defaultContext[self::EXTRA_PARAMETERS][$type] ?? [];
 
         foreach ($extras as $key => $value) {
             $this->setAttributeValue($object, $key, $value);

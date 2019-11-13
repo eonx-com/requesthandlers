@@ -8,6 +8,7 @@ use LoyaltyCorp\RequestHandlers\Exceptions\RequestValidationException;
 use LoyaltyCorp\RequestHandlers\Request\RequestObjectInterface;
 use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
 use LoyaltyCorp\RequestHandlers\TestHelper\Exceptions\ValidationFailedException;
+use RuntimeException;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -67,7 +68,7 @@ final class RequestObjectTestHelper
             return $exception->getErrors();
         }
 
-        throw new \RuntimeException('There were no validation errors.');
+        throw new RuntimeException('There were no validation errors.');
     }
 
     /**

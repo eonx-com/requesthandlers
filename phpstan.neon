@@ -24,25 +24,19 @@ parameters:
             message: '#Strict comparison using === between false and false will always evaluate to true\.#'
             path: src/Middleware/ValidatingMiddleware.php
         -
-            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return object but returns null\.#'
-            path: src/Serializer/DoctrineDenormalizer.php
-        -
-            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return object but returns object\|null\.#'
+            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return array|object but returns null\.#'
             path: src/Serializer/DoctrineDenormalizer.php
         -
             message: '#Strict comparison using !== between string and null will always evaluate to true\.#'
             path: src/Request/RequestBodyParamConverter.php
         -
-            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\RequestBodySerializer::denormalize\(\) should return object but returns null\.#'
+            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\RequestBodySerializer::denormalize\(\) should return array|object but returns null\.#'
             path: src/Serializer/RequestBodySerializer.php
         -
-            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\RequestBodySerializer::denormalize\(\) has parameter \$type with no typehint specified\.#'
-            path: src/Serializer/RequestBodySerializer.php
-        -
-            message: '#Call to static method PHPUnit\\Framework\\Assert::assertNull\(\) with object will always evaluate to false\.#'
+            message: '#Call to static method PHPUnit\\Framework\\Assert::assertNull\(\) with array|object will always evaluate to false\.#'
             path: tests/Serializer/DoctrineDenormalizerTest.php
         -
-            message: '#Call to static method PHPUnit\\Framework\\Assert::assertNull\(\) with object will always evaluate to false\.#'
+            message: '#Call to static method PHPUnit\\Framework\\Assert::assertNull\(\) with array|object will always evaluate to false\.#'
             path: tests/Serializer/RequestBodySerializerTest.php
         -
             message: '#Call to static method PHPUnit\\Framework\\Assert::assertInstanceOf\(\) with (.*) and Symfony\\Component\\Serializer\\Exception\\NotNormalizableValueException will always evaluate to true\.#'
@@ -50,12 +44,6 @@ parameters:
         -
             message: '#Cannot access offset 2 on object\|string\.#'
             path: tests/Integration/RequestIntegrationTest.php
-        -
-            message: '#Call to static method PHPUnit\\Framework\\Assert::assertSame\(\) with .purple. and object will always evaluate to false\.#'
-            path: tests/Serializer/DoctrineDenormalizerTest.php
-        -
-            message: '#Call to static method PHPUnit\\Framework\\Assert::assertSame\(\) with .somevalue. and object will always evaluate to false\.#'
-            path: tests/Serializer/DoctrineDenormalizerTest.php
         -
             message: '#Result of && is always false\.#'
             path: src/EventListeners/ParamConverterListener.php

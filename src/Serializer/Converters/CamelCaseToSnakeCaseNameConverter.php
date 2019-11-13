@@ -8,6 +8,8 @@ use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 /**
  * This class helps convert camel case property name to snake case. It will skip any part of the property name string
  * which it identifies as an array key.
+ *
+ * @PHPMD(PHPMD.IfStatementAssignment) PHPMD is complaining about it, but it doesnt happen.
  */
 class CamelCaseToSnakeCaseNameConverter implements NameConverterInterface
 {
