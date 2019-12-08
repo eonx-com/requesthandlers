@@ -57,7 +57,7 @@ final class ObjectValidator implements ObjectValidatorInterface
             [static::PREVALIDATE_GROUP]
         );
 
-        if ($violations->count()) {
+        if ($violations->count() > 0) {
             return $violations;
         }
 
