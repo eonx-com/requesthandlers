@@ -85,7 +85,7 @@ final class ParamConverterProvider extends ServiceProvider
         ];
 
         foreach ($validators as $validator) {
-            $this->app->bind($validator);
+            $this->app->singleton($validator);
         }
 
         $this->app->alias(AnnotationReader::class, Reader::class);

@@ -18,9 +18,9 @@ class SerialisableResponseProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(SerialisableResponseMiddleware::class);
+        $this->app->singleton(SerialisableResponseMiddleware::class);
 
-        $this->app->bind(
+        $this->app->singleton(
             ResponseSerialiserInterface::class,
             static function (Container $app): ResponseSerialiserInterface {
                 $ignoredAttributes = ['_statusCode'];
