@@ -262,7 +262,8 @@ XML;
         static::assertEquals($expectedResult, $thing->toArray());
 
         // Assert that the Middleware put $thing into the laravel route
-        static::assertSame($thing, $request->route()[2]['request']);
+        $actualThing = $request->route() === null ? null : $request->route()[2]['request'];
+        static::assertSame($thing, $actualThing);
     }
 
     /**
