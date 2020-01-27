@@ -24,9 +24,6 @@ parameters:
             message: '#Strict comparison using === between false and false will always evaluate to true\.#'
             path: src/Middleware/ValidatingMiddleware.php
         -
-            message: '#Method LoyaltyCorp\\RequestHandlers\\Serializer\\DoctrineDenormalizer::denormalize\(\) should return array|object but returns null\.#'
-            path: src/Serializer/DoctrineDenormalizer.php
-        -
             message: '#Strict comparison using !== between string and null will always evaluate to true\.#'
             path: src/Request/RequestBodyParamConverter.php
         -

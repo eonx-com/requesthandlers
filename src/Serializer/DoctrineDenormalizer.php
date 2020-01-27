@@ -83,12 +83,18 @@ final class DoctrineDenormalizer implements DenormalizerInterface
             }
         }
 
-        // if criteria is empty i.e. no request key found for this class then return null
+        // if criteria is empty i.e. no request key found for this class then return the
+        // original data
         if (\count($criteria) === 0) {
-            return null;
+            return $data;
         }
 
-        return $this->entityFinder->findOneBy($type, $criteria, $context);
+        $result = $this->entityFinder->findOneBy($type, $criteria, $context);
+
+        // If we didnt find a result, we will return the original $data so that the
+        // object has the choice to differentiate between "data provided, but not found"
+        // vs "data not provided"
+        return $result ?? $data;
     }
 
     /**
@@ -126,9 +132,11 @@ final class DoctrineDenormalizer implements DenormalizerInterface
         if (\is_string($data) !== true && \is_int($data) !== true) {
             return $data;
         }
+
         $keys = $this->getClassLookupKey($class);
-        // If there's more than a single key, and the defined default, we've got a composite key, which we can't
-        // handle with a single scalar value.
+
+        // If there's more than a single key, and the defined default, we've got a
+        // composite key, which we can't handle with a single scalar value.
         if (\count($keys) > 2) {
             return $data;
         }
@@ -136,6 +144,9 @@ final class DoctrineDenormalizer implements DenormalizerInterface
         $key = \array_key_first($keys);
         $result = $this->entityFinder->findOneBy($class, [$key => $data], $context);
 
+        // If we didnt find a result, we will return the original $data so that the
+        // object has the choice to differentiate between "data provided, but not found"
+        // vs "data not provided"
         return $result ?? $data;
     }
 
