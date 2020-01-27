@@ -12,7 +12,7 @@ use ReflectionMethod;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -54,15 +54,15 @@ class ParamConverterListener implements EventSubscriberInterface
      * Listens for the onKernelController event to apply param converters to request
      * attributes.
      *
-     * @param \Symfony\Component\HttpKernel\Event\FilterControllerEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\ControllerEvent $event
      *
      * @return void
      *
-     * @throws \ReflectionException
      * @throws \LoyaltyCorp\RequestHandlers\Exceptions\InvalidRequestAttributeException
      * @throws \LoyaltyCorp\RequestHandlers\Exceptions\ParamConverterMisconfiguredException
+     * @throws \ReflectionException
      */
-    public function onKernelController(FilterControllerEvent $event): void
+    public function onKernelController(ControllerEvent $event): void
     {
         $controller = $event->getController();
         $request = $event->getRequest();

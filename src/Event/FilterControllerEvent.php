@@ -5,7 +5,7 @@ namespace LoyaltyCorp\RequestHandlers\Event;
 
 use LoyaltyCorp\RequestHandlers\Exceptions\KernelNotAvailableException;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent as BaseFilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
 
 /**
  * Overridden to enable ParamConverterListener from Sensio's FrameworkExtraBundle to work
@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent as BaseFilterContro
  * This event will not fire correctly for some event listeners because we modify the
  * constructor and do not provide everything that is required.
  */
-class FilterControllerEvent extends BaseFilterControllerEvent
+class FilterControllerEvent extends ControllerEvent
 {
     /**
      * @var \Symfony\Component\HttpFoundation\Request
