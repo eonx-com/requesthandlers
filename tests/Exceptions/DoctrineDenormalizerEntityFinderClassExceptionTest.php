@@ -7,7 +7,7 @@ use LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerEntityFinderClass
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**
- * @covers \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerMappingException
+ * @covers \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerEntityFinderClassException
  */
 class DoctrineDenormalizerEntityFinderClassExceptionTest extends TestCase
 {

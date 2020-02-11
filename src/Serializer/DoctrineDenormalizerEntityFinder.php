@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace LoyaltyCorp\RequestHandlers\Serializer;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\Common\Persistence\ObjectRepository;
 use LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerEntityFinderClassException;
 use LoyaltyCorp\RequestHandlers\Serializer\Interfaces\DoctrineDenormalizerEntityFinderInterface;
 
@@ -49,19 +48,6 @@ class DoctrineDenormalizerEntityFinder implements DoctrineDenormalizerEntityFind
         }
 
         $repository = $this->entityManager->getRepository($class);
-
-        // @codeCoverageIgnoreStart
-        // Ignored as there is no efficient way to test this.
-        if (($repository instanceof ObjectRepository) === false) {
-            return null;
-        }
-        // @codeCoverageIgnoreEnd
-
-        /**
-         * @var \Doctrine\Common\Persistence\ObjectRepository $repository
-         *
-         * @see https://youtrack.jetbrains.com/issue/WI-37859 - typehint required until PhpStorm recognises === chek
-         */
 
         return $repository->findOneBy($criteria);
     }

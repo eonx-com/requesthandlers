@@ -13,23 +13,6 @@ use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 class DoctrineDenormalizerEntityFinderTest extends TestCase
 {
     /**
-     * Tests that the 'findOneBy' method returns null when a repository is not found for the specified class.
-     *
-     * @return void
-     *
-     * @throws \LoyaltyCorp\RequestHandlers\Exceptions\DoctrineDenormalizerEntityFinderClassException
-     */
-    public function testFindOneByReturnsNullOnMissingRepository(): void
-    {
-        $registry = new ManagerRegistryStub(null);
-        $instance = new DoctrineDenormalizerEntityFinder($registry);
-
-        $result = $instance->findOneBy(stdClass::class, []);
-
-        self::assertNull($result);
-    }
-
-    /**
      * Tests that the 'findOneBy' successfully returns an entity when the correct repository instance is used.
      *
      * @return void
