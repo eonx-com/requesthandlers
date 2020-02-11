@@ -5,8 +5,26 @@ namespace Tests\LoyaltyCorp\RequestHandlers\Stubs\Vendor\Doctrine\Common\Persist
 
 use Doctrine\Common\Persistence\ManagerRegistry;
 
+/**
+ * @coversNothing
+ */
 class ManagerRegistryStub implements ManagerRegistry
 {
+    /**
+     * @var mixed|null
+     */
+    private $objectRepository;
+
+    /**
+     * Constructs a new instance of ManagerRegistryStub.
+     *
+     * @param mixed $objectRepository
+     */
+    public function __construct($objectRepository = null)
+    {
+        $this->objectRepository = $objectRepository;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -85,6 +103,7 @@ class ManagerRegistryStub implements ManagerRegistry
      */
     public function getRepository($persistentObject, $persistentManagerName = null)
     {
+        return $this->objectRepository;
     }
 
     /**
