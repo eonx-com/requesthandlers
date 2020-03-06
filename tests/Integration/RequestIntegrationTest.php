@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\LoyaltyCorp\RequestHandlers\Integration;
 
-use Doctrine\Common\Persistence\ManagerRegistry as CommonManagerRegistry;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use EoneoPay\Utils\AnnotationReader;
 use EoneoPay\Utils\DateTime;
 use EoneoPay\Utils\Interfaces\AnnotationReaderInterface;
@@ -373,7 +372,6 @@ VIOLATIONS;
         $app->bind(DoctrineDenormalizerEntityFinderInterface::class, DoctrineDenormalizerEntityFinderStub::class);
         $registry = new ManagerRegistryStub();
         $app->instance(ManagerRegistry::class, $registry);
-        $app->instance(CommonManagerRegistry::class, $registry);
         (new ParamConverterProvider($app))->register();
         $app->bind(AnnotationReaderInterface::class, AnnotationReader::class);
 
