@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "77098abac48e938fb00281f64aecb2f4",
+    "content-hash": "14632d754284e92d64be7391a946c70e",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -5852,16 +5852,16 @@
         },
         {
             "name": "eonx-com/standards",
-            "version": "v0.2.3",
+            "version": "v0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/eonx-com/standards.git",
-                "reference": "e04a85fc3c1f2a34c1af8c991e2b544b1c9e6eeb"
+                "reference": "57cd574d00cf00872ecf90562d2ba1538e3b0076"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/eonx-com/standards/zipball/e04a85fc3c1f2a34c1af8c991e2b544b1c9e6eeb",
-                "reference": "e04a85fc3c1f2a34c1af8c991e2b544b1c9e6eeb",
+                "url": "https://api.github.com/repos/eonx-com/standards/zipball/57cd574d00cf00872ecf90562d2ba1538e3b0076",
+                "reference": "57cd574d00cf00872ecf90562d2ba1538e3b0076",
                 "shasum": ""
             },
             "require": {
@@ -5905,7 +5905,7 @@
                 "eoneopay",
                 "standards"
             ],
-            "time": "2019-12-05T03:38:07+00:00"
+            "time": "2020-01-14T02:53:45+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
