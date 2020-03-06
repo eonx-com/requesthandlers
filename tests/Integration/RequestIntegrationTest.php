@@ -370,7 +370,8 @@ VIOLATIONS;
         $app = new ApplicationStub();
         $app->instance(Container::class, $app);
         $app->bind(DoctrineDenormalizerEntityFinderInterface::class, DoctrineDenormalizerEntityFinderStub::class);
-        $app->bind(ManagerRegistry::class, ManagerRegistryStub::class);
+        $registry = new ManagerRegistryStub();
+        $app->instance(ManagerRegistry::class, $registry);
         (new ParamConverterProvider($app))->register();
         $app->bind(AnnotationReaderInterface::class, AnnotationReader::class);
 

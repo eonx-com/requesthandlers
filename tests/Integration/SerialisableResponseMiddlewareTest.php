@@ -97,7 +97,8 @@ class SerialisableResponseMiddlewareTest extends TestCase
         $app = new ApplicationStub();
         $app->instance(Container::class, $app);
         $app->bind(DoctrineDenormalizerEntityFinderInterface::class, DoctrineDenormalizerEntityFinderStub::class);
-        $app->bind(ManagerRegistry::class, ManagerRegistryStub::class);
+        $registry = new ManagerRegistryStub();
+        $app->instance(ManagerRegistry::class, $registry);
         $app->bind(AnnotationReaderInterface::class, AnnotationReader::class);
         (new ParamConverterProvider($app))->register();
         (new SerialisableResponseProvider($app))->register();

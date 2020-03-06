@@ -56,7 +56,8 @@ class ParamConverterProviderTest extends TestCase
     public function testRegister(): void
     {
         $application = new ApplicationStub();
-        $application->bind(ManagerRegistry::class, ManagerRegistryStub::class);
+        $registry = new ManagerRegistryStub();
+        $application->instance(ManagerRegistry::class, $registry);
         $application->bind(AnnotationReaderInterface::class, AnnotationReader::class);
 
         $application->bind(
@@ -106,7 +107,8 @@ class ParamConverterProviderTest extends TestCase
     public function testContextConfigurator(): void
     {
         $application = new ApplicationStub();
-        $application->bind(ManagerRegistry::class, ManagerRegistryStub::class);
+        $registry = new ManagerRegistryStub();
+        $application->instance(ManagerRegistry::class, $registry);
         $application->bind(AnnotationReaderInterface::class, AnnotationReader::class);
         $application->bind(ContextConfiguratorInterface::class, ContextConfiguratorStub::class);
 
