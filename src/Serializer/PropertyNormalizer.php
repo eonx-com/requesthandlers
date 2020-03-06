@@ -5,7 +5,9 @@ namespace LoyaltyCorp\RequestHandlers\Serializer;
 
 use EoneoPay\Utils\Interfaces\AnnotationReaderInterface;
 use LoyaltyCorp\RequestHandlers\Annotations\InjectedFromContext;
+use ReflectionClass;
 use Symfony\Component\PropertyInfo\PropertyTypeExtractorInterface;
+use Symfony\Component\Serializer\Mapping\ClassDiscriminatorMapping;
 use Symfony\Component\Serializer\Mapping\ClassDiscriminatorResolverInterface;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
@@ -22,6 +24,11 @@ final class PropertyNormalizer extends BasePropertyNormalizer
      * @var \EoneoPay\Utils\Interfaces\AnnotationReaderInterface
      */
     private $annotationReader;
+
+    /**
+     * @var \Symfony\Component\Serializer\Mapping\ClassDiscriminatorResolverInterface|null
+     */
+    private $classResolver;
 
     /**
      * Constructor
@@ -55,6 +62,11 @@ final class PropertyNormalizer extends BasePropertyNormalizer
         );
 
         $this->annotationReader = $annotationReader;
+
+        // Undo the classDiscriminatorResolver of the underlying ObjectNormalizer
+        // so we can handle class resolution here.
+        $this->classResolver = $this->classDiscriminatorResolver;
+        $this->classDiscriminatorResolver = null;
     }
 
     /**
@@ -104,6 +116,42 @@ final class PropertyNormalizer extends BasePropertyNormalizer
     }
 
     /**
+     * Overridden so we support a more flexible class discriminator resolution than
+     * the default symfony system.
+     *
+     * If we have a class discriminator, the type property isn't present or isn't a
+     * valid value and the annotated base type isn't abstract, just use the base
+     * type so that our validator can do its job.
+     *
+     * {@inheritdoc}
+     *
+     * @throws \ReflectionException
+     *
+     * @noinspection PhpTooManyParametersInspection
+     */
+    protected function instantiateObject(
+        array &$data,
+        $class,
+        array &$context,
+        \ReflectionClass $reflectionClass,
+        $allowedAttributes,
+        ?string $format = null
+    ) {
+        $class = $this->resolveClassMapping($class, $data);
+        /** @noinspection SuspiciousAssignmentsInspection */
+        $reflectionClass = new ReflectionClass($class);
+
+        return parent::instantiateObject(
+            $data,
+            $class,
+            $context,
+            $reflectionClass,
+            $allowedAttributes,
+            $format
+        );
+    }
+
+    /**
      * {@inheritdoc}
      *
      * Overridden to allow InjectFromContext to block request data from making it into object
@@ -130,5 +178,38 @@ final class PropertyNormalizer extends BasePropertyNormalizer
             $format,
             $context
         );
+    }
+
+    /**
+     * Resolves the class mapping for a class that has a discriminator. If the
+     * type property is missing or contains an invalid value the method returns
+     * the original class.
+     *
+     * This is done for Eonx purposes so we can still receive an object from the
+     * serialiser and validate it - it requires that a discriminated object must
+     * not be abstract.
+     *
+     * @param string $class
+     * @param mixed[] $data
+     *
+     * @return string
+     */
+    private function resolveClassMapping(string $class, array &$data): string
+    {
+        if ($this->classResolver instanceof ClassDiscriminatorResolverInterface === false) {
+            return $class;
+        }
+
+        $mapping = $this->classResolver->getMappingForClass($class);
+
+        // The class isnt a discriminator mapped class.
+        if ($mapping instanceof ClassDiscriminatorMapping === false ||
+            isset($data[$mapping->getTypeProperty()]) === false) {
+            return $class;
+        }
+
+        $type = $data[$mapping->getTypeProperty()];
+
+        return $mapping->getClassForType($type) ?? $class;
     }
 }

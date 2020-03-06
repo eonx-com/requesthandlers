@@ -6,13 +6,19 @@ namespace Tests\LoyaltyCorp\RequestHandlers\Serializer;
 use EoneoPay\Utils\AnnotationReader;
 use LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer;
 use ReflectionClass;
+use Symfony\Component\Serializer\Mapping\ClassDiscriminatorFromClassMetadata;
+use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
+use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
+use Tests\LoyaltyCorp\RequestHandlers\Fixtures\DiscriminatedRequest;
 use Tests\LoyaltyCorp\RequestHandlers\Integration\Fixtures\ThingRequest;
 use Tests\LoyaltyCorp\RequestHandlers\Stubs\Request\RequestObjectStub;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
 /**
  * @covers \LoyaltyCorp\RequestHandlers\Serializer\PropertyNormalizer
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class PropertyNormalizerTest extends TestCase
 {
@@ -109,5 +115,89 @@ class PropertyNormalizerTest extends TestCase
         static::assertTrue($method->invoke($normalizer, ThingRequest::class, 'amount'));
         static::assertFalse($method->invoke($normalizer, ThingRequest::class, 'baz'));
         static::assertFalse($method->invoke($normalizer, new ThingRequest(), 'baz'));
+    }
+
+    /**
+     * Tests that when deserialising a discriminator mapped class that having invalid
+     * data present for type discrimination will not cause an exception.
+     *
+     * @return void
+     *
+     * @throws \EoneoPay\Utils\Exceptions\AnnotationCacheException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testTypeDiscriminationWithInvalidType(): void
+    {
+        $annotationReader = new AnnotationReader();
+        $metadata = new ClassMetadataFactory(new AnnotationLoader(
+            $annotationReader
+        ));
+        $resolver = new ClassDiscriminatorFromClassMetadata($metadata);
+
+        $normalizer = new PropertyNormalizer(
+            $annotationReader,
+            $metadata,
+            null,
+            null,
+            $resolver
+        );
+
+        $result = $normalizer->denormalize([
+            'type' => 'nope'
+        ], DiscriminatedRequest::class, 'json');
+
+        self::assertInstanceOf(DiscriminatedRequest::class, $result);
+        self::assertSame('nope', $result->getType());
+    }
+
+    /**
+     * Tests that when deserialising a discriminator mapped class that not having the
+     * data present for type discrimination will not cause an exception.
+     *
+     * @return void
+     *
+     * @throws \EoneoPay\Utils\Exceptions\AnnotationCacheException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testTypeDiscriminationWithoutAType(): void
+    {
+        $annotationReader = new AnnotationReader();
+        $metadata = new ClassMetadataFactory(new AnnotationLoader(
+            $annotationReader
+        ));
+        $resolver = new ClassDiscriminatorFromClassMetadata($metadata);
+
+        $normalizer = new PropertyNormalizer(
+            $annotationReader,
+            $metadata,
+            null,
+            null,
+            $resolver
+        );
+
+        $result = $normalizer->denormalize([], DiscriminatedRequest::class, 'json');
+
+        self::assertInstanceOf(DiscriminatedRequest::class, $result);
+    }
+
+    /**
+     * Tests that when deserialising a discriminator mapped class that having invalid
+     * data present for type discrimination will not cause an exception.
+     *
+     * @return void
+     *
+     * @throws \EoneoPay\Utils\Exceptions\AnnotationCacheException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testTypeDiscriminationWithoutResolver(): void
+    {
+        $normalizer = new PropertyNormalizer(new AnnotationReader());
+
+        $result = $normalizer->denormalize([
+            'type' => 'nope'
+        ], DiscriminatedRequest::class, 'json');
+
+        self::assertInstanceOf(DiscriminatedRequest::class, $result);
+        self::assertSame('nope', $result->getType());
     }
 }

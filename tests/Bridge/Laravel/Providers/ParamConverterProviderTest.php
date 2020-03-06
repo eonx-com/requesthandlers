@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace Tests\LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers;
 
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Common\Persistence\ManagerRegistry as CommonManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use EoneoPay\Utils\AnnotationReader;
 use EoneoPay\Utils\Interfaces\AnnotationReaderInterface;
 use LoyaltyCorp\RequestHandlers\Bridge\Laravel\Providers\ParamConverterProvider;
@@ -56,7 +57,9 @@ class ParamConverterProviderTest extends TestCase
     public function testRegister(): void
     {
         $application = new ApplicationStub();
-        $application->bind(ManagerRegistry::class, ManagerRegistryStub::class);
+        $registry = new ManagerRegistryStub();
+        $application->instance(ManagerRegistry::class, $registry);
+        $application->instance(CommonManagerRegistry::class, $registry);
         $application->bind(AnnotationReaderInterface::class, AnnotationReader::class);
 
         $application->bind(
@@ -106,7 +109,9 @@ class ParamConverterProviderTest extends TestCase
     public function testContextConfigurator(): void
     {
         $application = new ApplicationStub();
-        $application->bind(ManagerRegistry::class, ManagerRegistryStub::class);
+        $registry = new ManagerRegistryStub();
+        $application->instance(ManagerRegistry::class, $registry);
+        $application->instance(CommonManagerRegistry::class, $registry);
         $application->bind(AnnotationReaderInterface::class, AnnotationReader::class);
         $application->bind(ContextConfiguratorInterface::class, ContextConfiguratorStub::class);
 
