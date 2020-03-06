@@ -210,6 +210,8 @@ final class PropertyNormalizer extends BasePropertyNormalizer
 
         $type = $data[$mapping->getTypeProperty()];
 
-        return $mapping->getClassForType($type) ?? $class;
+        return \is_string($type) === true
+            ? ($mapping->getClassForType($type) ?? $class)
+            : $class;
     }
 }

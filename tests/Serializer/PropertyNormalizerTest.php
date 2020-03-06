@@ -181,6 +181,38 @@ class PropertyNormalizerTest extends TestCase
     }
 
     /**
+     * Tests that when deserialising a discriminator mapped class that will accept
+     * an integer data type.
+     *
+     * @return void
+     *
+     * @throws \EoneoPay\Utils\Exceptions\AnnotationCacheException
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function testTypeDiscriminationWithNonStringType(): void
+    {
+        $annotationReader = new AnnotationReader();
+        $metadata = new ClassMetadataFactory(new AnnotationLoader(
+            $annotationReader
+        ));
+        $resolver = new ClassDiscriminatorFromClassMetadata($metadata);
+
+        $normalizer = new PropertyNormalizer(
+            $annotationReader,
+            $metadata,
+            null,
+            null,
+            $resolver
+        );
+
+        $result = $normalizer->denormalize([
+            'type' => 5
+        ], DiscriminatedRequest::class, 'json');
+
+        self::assertInstanceOf(DiscriminatedRequest::class, $result);
+    }
+
+    /**
      * Tests that when deserialising a discriminator mapped class that having invalid
      * data present for type discrimination will not cause an exception.
      *
