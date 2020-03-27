@@ -20,7 +20,7 @@
   "require": {
     "php": "^7.2",
     "eonx-com/apiformats": "^1.0",
-    "eonx-com/utils": "^1.0",
+    "eonx-com/utils": "^1.0|^2.0",
     "friendsofsymfony/rest-bundle": "^2.5",
     "laravel/lumen-framework": "^6.0",
     "sensio/framework-extra-bundle": "^5.3",
