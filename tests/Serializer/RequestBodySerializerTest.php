@@ -5,7 +5,6 @@ namespace Tests\LoyaltyCorp\RequestHandlers\Serializer;
 
 use DateTime;
 use LoyaltyCorp\RequestHandlers\Serializer\RequestBodySerializer;
-use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Tests\LoyaltyCorp\RequestHandlers\TestCase;
 
@@ -32,11 +31,6 @@ class RequestBodySerializerTest extends TestCase
             'attribute' => 'elephant_colour'
         ]);
 
-        self::assertNull($result);
-
-        $failures = $serializer->getFailures();
-
-        self::assertCount(1, $failures);
-        self::assertInstanceOf(NotNormalizableValueException::class, $failures['elephant_colour']);
+        self::assertSame('PURPLE-ELEPHANT', $result);
     }
 }

@@ -14,11 +14,6 @@ use Symfony\Component\Serializer\Serializer as BaseSerializer;
 final class RequestBodySerializer extends BaseSerializer
 {
     /**
-     * @var \Symfony\Component\Serializer\Exception\NotNormalizableValueException[]
-     */
-    private $failures = [];
-
-    /**
      * Overridden to allow us to catch NotNormalizableValueExceptions instead of letting
      * the exception bubble.
      *
@@ -32,24 +27,14 @@ final class RequestBodySerializer extends BaseSerializer
         try {
             return parent::denormalize($data, $type, $format, $context);
         } catch (NotNormalizableValueException $exception) {
-            // Instead of the default behaviour of the serializer, if we encounter a value
-            // that cannot be normalised, set the value to null and capture the error.
+            // When we receive a NotNormalizableValueException from an internal serialisation
+            // event that marks the value as denormalizable we return it as is - the intention
+            // for requesthandlers is that the validation phase will correctly validate that
+            // the value matches an excepted type assertion.
 
-            // This allows us to present the normalisation errors as part of a validation
-            // failure exception.
-            if (\array_key_exists('attribute', $context) === true) {
-                $this->failures[$context['attribute']] = $exception;
-            }
-
-            return null;
+            // Passing the value through means that we can continue denormalising without aborting
+            // when we get weird data.
+            return $data;
         }
-    }
-
-    /**
-     * @return \Symfony\Component\Serializer\Exception\NotNormalizableValueException[]
-     */
-    public function getFailures(): array
-    {
-        return $this->failures;
     }
 }
